@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-02T12:10:14.7974404" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-02T12:09:57.2301459" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-02T14:05:08.2570366" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-02T14:04:34.7877417" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1348,17 +1348,32 @@
           </task>
           <addData>
             <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
-              <dataType name="Enum1">
+              <dataType name="EStation">
                 <baseType>
                   <enum>
                     <values>
-                      <value name="X" />
-                      <value name="A" />
-                      <value name="B" />
+                      <value name="Manual" />
+                      <value name="Remote" />
                     </values>
                   </enum>
                 </baseType>
                 <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/enumvaluedocumentation" handleUnknown="implementation">
+                    <EnumValueDocumentation>
+                      <EnumValue>
+                        <Name>Manual</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">prio 1</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                      <EnumValue>
+                        <Name>Remote</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">prio 2</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                    </EnumValueDocumentation>
+                  </data>
                   <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                     <Attributes>
                       <Attribute Name="qualified_only" Value="" />
@@ -1371,31 +1386,108 @@
                 </addData>
               </dataType>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="EStates">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="Stable" />
+                      <value name="PendingAck" />
+                      <value name="FailSafe" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>71500b0c-0575-40e0-91ef-6cd2952ca44b</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="PLC_PRG" pouType="program">
                 <interface>
                   <localVars>
-                    <variable name="ReqA">
+                    <variable name="ReqManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="ReqB">
+                    <variable name="ReqRemote">
                       <type>
                         <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="State">
+                      <type>
+                        <derived name="EStates" />
                       </type>
                     </variable>
                     <variable name="Active">
                       <type>
-                        <derived name="Enum1" />
+                        <derived name="EStation" />
                       </type>
                     </variable>
-                    <variable name="GrantedA">
+                    <variable name="AckManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="GrantedB">
+                    <variable name="AckRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="FailSafe">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="FALSE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="GrantedManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="GrantedRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Pending">
+                      <type>
+                        <derived name="EStation" />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_RequestManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_RequestRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_GrantedManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_GrantedRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_Pending">
                       <type>
                         <BOOL />
                       </type>
@@ -1411,15 +1503,47 @@
 							//Put your Application program here 
 
 //IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
+CASE State OF 
+	EStates.Stable: 
+		IF ReqManual AND NOT ReqRemote THEN 
+			Pending := Estation.Manual;
+			State := EStates.PendingAck;
+	//Active := EStation.Manual; 
+			ELSIF ReqRemote AND NOT ReqManual THEN
+				Pending := EStation.Remote;
+				State := EStates.PendingAck;
+	//Active := EStation.Remote;
+		END_IF
+	EStates.PendingAck: 
+		GrantedManual := (Pending = EStation.Manual);
+		GrantedRemote := (Pending = EStation.Remote); 
+		
+		IF (GrantedManual AND AckManual) OR (GrantedRemote AND AckRemote) THEN 
+			Active := Pending; 
+			State := EStates.Stable; 
+		END_IF
+		
+END_CASE
 
-IF ReqA AND NOT ReqB THEN 
-	Active := Enum1.A; 
-	ELSIF ReqB AND NOT ReqA THEN
-	Active := Enum1.B;
-END_IF
 
-GrantedA := (Active = Enum1.A); 
-GrantedB := (Active = Enum1.B); 
+//AckManual := ReqManual; 
+//AckRemote := ReqRemote; 
+
+
+GrantedManual := (Pending = EStation.Manual); 
+GrantedRemote := (Pending = EStation.Remote); 
+
+
+Lamp_RequestManual := ReqManual; 
+Lamp_RequestRemote := ReqRemote; 
+
+Lamp_GrantedManual := GrantedManual; 
+Lamp_GrantedRemote := GrantedRemote;
+
+Lamp_Pending := (State = EStates.PendingAck); 
+  
+
+
 </xhtml>
                   </ST>
                 </body>
@@ -2860,9 +2984,11 @@ config_outgroups();
               <Object Name="config_outgroups" ObjectId="3a27c8bc-c9c8-4536-96db-b44cca192ab7" />
               <Object Name="config_outputs" ObjectId="258c4e0b-bfa2-4c99-8464-f5af38d0fed3" />
             </Object>
-            <Object Name="Enum1" ObjectId="b0f5250c-ab0a-4ee0-8ea3-eb68a42dfe8b" />
+            <Object Name="EStation" ObjectId="b0f5250c-ab0a-4ee0-8ea3-eb68a42dfe8b" />
+            <Object Name="EStates" ObjectId="71500b0c-0575-40e0-91ef-6cd2952ca44b" />
           </Object>
         </Object>
+        <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
       </ProjectStructure>
     </data>
   </addData>
