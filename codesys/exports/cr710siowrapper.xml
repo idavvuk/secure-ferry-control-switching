@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-03-02T10:16:41.6966775" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-02T10:13:18.3345143" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-02T10:58:00.5461003" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-02T10:57:39.1380237" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -104,6 +104,11 @@
                     <variable name="x">
                       <type>
                         <INT />
+                      </type>
+                    </variable>
+                    <variable name="y">
+                      <type>
+                        <BOOL />
                       </type>
                     </variable>
                   </localVars>
@@ -1344,7 +1349,15 @@
           <addData>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="PLC_PRG" pouType="program">
-                <interface />
+                <interface>
+                  <localVars>
+                    <variable name="z">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">CR710S_Config(); 			//IO Configuration
@@ -1544,25 +1557,6 @@ config_outgroups();
                   </data>
                 </addData>
               </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
-              <Libraries>
-                <Library Name="ifmR360-3, 1.1.1.0 (ifm electronic)" Namespace="ifmR360_3" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
-                <Library Name="#Util" Namespace="Util" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="Util, * (System)">
-                  <Parameters>
-                    <Parameter Name="IBLOCKSIZE" Value="22800" />
-                  </Parameters>
-                </Library>
-                <Library Name="#Standard" Namespace="Standard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="Standard, * (System)" />
-                <Library Name="CR710S IOWrapper, 1.0.4.9 (ifm electronic)" Namespace="CR710S_IOWrapper" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
-                <Library Name="#IoStandard" Namespace="IoStandard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="true" DefaultResolution="IoStandard, 3.5.10.0 (System)" />
-                <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>296cb935-5a07-43ab-9548-d218e0f9b37a</ObjectId>
-                  </data>
-                </addData>
-              </Libraries>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
               <ObjectId>f9c00bdb-2f18-4e80-863e-6da977e8f304</ObjectId>
@@ -2807,7 +2801,6 @@ config_outgroups();
             <Object Name="System_Outputs" ObjectId="8a3a383a-fec4-4298-8adf-1348f4884f9e" />
           </Object>
           <Object Name="Application" ObjectId="f9c00bdb-2f18-4e80-863e-6da977e8f304">
-            <Object Name="Library Manager" ObjectId="296cb935-5a07-43ab-9548-d218e0f9b37a" />
             <Object Name="PLC_PRG" ObjectId="a45e625f-1b31-4fd3-900b-f9f443a5cee1" />
             <Object Name="Task" ObjectId="12674cf4-d25e-4151-96b2-08a6cc6d1e52" />
             <Object Name="CR710S_Config" ObjectId="47b983a9-d53f-49e6-bcee-eb4ac70f4850">
@@ -2817,7 +2810,6 @@ config_outgroups();
             </Object>
           </Object>
         </Object>
-        <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
       </ProjectStructure>
     </data>
   </addData>
