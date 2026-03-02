@@ -1,0 +1,13 @@
+# CODESYS temp files
+*.~*
+*.bak
+*.tmp
+
+# CODESYS cache
+*.compileinfo
+*.deviceinfo
+*.SVN
+
+# OS junk
+.DS_Store
+Thumbs.db
