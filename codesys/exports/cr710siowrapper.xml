@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-03-03T13:48:36.508383" />
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-03-05T10:32:42.6013442" />
   <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-03T13:48:06.8202091" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
@@ -1335,6 +1335,11 @@
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
               </documentation>
             </pouInstance>
+            <pouInstance name="HeartBeat" typeName="">
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </documentation>
+            </pouInstance>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
                 <TaskSettings KindOfTask="Cyclic" Interval="t#10ms" WithinSPSTimeSlicing="true">
@@ -1346,6 +1351,38 @@
               </data>
             </addData>
           </task>
+          <globalVars name="GVL_HeartBeat">
+            <variable name="HB_Remote_Signal">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Manual_Signal">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Remote_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Manual_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                <Attributes>
+                  <Attribute Name="qualified_only" Value="" />
+                </Attributes>
+              </data>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>cfd39f62-a8d3-47ae-aac6-de2a30895164</ObjectId>
+              </data>
+            </addData>
+          </globalVars>
           <addData>
             <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
               <dataType name="EStation">
@@ -1548,19 +1585,14 @@
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="HeartBeat_Remote">
+                    <variable name="Lamp_Remote_No_HeartBeat">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="HeartBeat_Manual">
+                    <variable name="Lamp_Manual_No_HeartBeat">
                       <type>
                         <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="hb">
-                      <type>
-                        <derived name="HeartBeat" />
                       </type>
                     </variable>
                   </localVars>
@@ -1574,22 +1606,22 @@
 							//Put your Application program here 
 
 //IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
-hb();
+
 CASE State OF 
 	EStates.Stable: 
 		Pending := EStation.None; //No takeover in progress
 
-		IF ReqManual AND NOT ReqRemote AND Active &lt;&gt; EStation.Manual AND HeartBeat_Manual THEN 
+		IF ReqManual AND NOT ReqRemote AND Active &lt;&gt; EStation.Manual AND GVL_HeartBeat.HB_Manual_OK THEN 
 			Pending := Estation.Manual;
 			State := EStates.PendingAck;
 
-			ELSIF ReqRemote AND NOT ReqManual AND Active &lt;&gt; EStation.Remote AND HeartBeat_Remote THEN
+			ELSIF ReqRemote AND NOT ReqManual AND Active &lt;&gt; EStation.Remote AND GVL_HeartBeat.HB_Remote_OK THEN
 				Pending := EStation.Remote;
 				State := EStates.PendingAck;
 		END_IF
 	EStates.PendingAck: 
 				
-		IF (GrantedManual AND (NOT ReqManual OR NOT HeartBeat_Manual)) OR (GrantedRemote AND (NOT ReqRemote OR NOT HeartBeat_Remote)) THEN 
+		IF (GrantedManual AND (NOT ReqManual OR NOT GVL_HeartBeat.HB_Manual_OK)) OR (GrantedRemote AND (NOT ReqRemote OR NOT GVL_HeartBeat.HB_Remote_OK)) THEN 
 			Pending := EStation.None; 
 			State := EStates.Stable; 
   
@@ -1605,6 +1637,7 @@ CASE State OF
 					Active := Pending; 
 					Pending := EStation.None;
 					State := EStates.Stable;
+					//Testar att ta bort dessa
 					Released := FALSE; 
 					ReqRemote := FALSE; 
 					ReqManual := FALSE; 
@@ -1630,6 +1663,9 @@ Lamp_ActiveRemote := (Active = EStation.Remote);
 
 Lamp_Released := Released;
 Lamp_PendingReady := PendingReady;
+
+Lamp_Remote_No_HeartBeat := ReqRemote AND (NOT GVL_HeartBeat.HB_Remote_OK);
+Lamp_Manual_No_HeartBEat := ReqRemote AND (NOT GVL_HeartBeat.HB_Manual_OK);
 
   
 
@@ -1889,13 +1925,13 @@ config_outgroups();
                         </data>
                       </addData>
                     </vendorElement>
-                    <contact localId="4" negated="false" storage="none" edge="none">
+                    <contact localId="4" negated="true" storage="none" edge="none">
                       <position x="0" y="0" />
                       <connectionPointIn>
                         <connection refLocalId="0" />
                       </connectionPointIn>
                       <connectionPointOut />
-                      <variable>HB_Remote_Signal</variable>
+                      <variable>GVL_HeartBeat.HB_Remote_Signal</variable>
                     </contact>
                     <inVariable localId="5">
                       <position x="0" y="0" />
@@ -1905,7 +1941,7 @@ config_outgroups();
                     <block localId="3" typeName="TON" instanceName="tHBRemote">
                       <position x="0" y="0" />
                       <inputVariables>
-                        <variable formalParameter="IN">
+                        <variable formalParameter="IN" negated="true">
                           <connectionPointIn>
                             <connection refLocalId="4" />
                           </connectionPointIn>
@@ -1950,30 +1986,63 @@ config_outgroups();
                         </data>
                       </addData>
                     </vendorElement>
-                    <contact localId="9" negated="false" storage="none" edge="none">
+                    <contact localId="8" negated="true" storage="none" edge="none">
                       <position x="0" y="0" />
                       <connectionPointIn>
                         <connection refLocalId="0" />
                       </connectionPointIn>
                       <connectionPointOut />
-                      <variable>HB_Manual_Signal</variable>
+                      <variable>tHBRemote.Q</variable>
                     </contact>
-                    <inVariable localId="10">
+                    <coil localId="9" negated="false" storage="none">
+                      <position x="0" y="0" />
+                      <connectionPointIn>
+                        <connection refLocalId="8" />
+                      </connectionPointIn>
+                      <connectionPointOut />
+                      <variable>GVL_HeartBeat.HB_Remote_OK</variable>
+                    </coil>
+                    <comment localId="10" height="0" width="0">
+                      <position x="0" y="0" />
+                      <content>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+                      </content>
+                    </comment>
+                    <vendorElement localId="11">
+                      <position x="0" y="0" />
+                      <alternativeText>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+                      </alternativeText>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation">
+                          <ElementType xmlns="">networktitle</ElementType>
+                        </data>
+                      </addData>
+                    </vendorElement>
+                    <contact localId="13" negated="true" storage="none" edge="none">
+                      <position x="0" y="0" />
+                      <connectionPointIn>
+                        <connection refLocalId="0" />
+                      </connectionPointIn>
+                      <connectionPointOut />
+                      <variable>GVL_HeartBeat.HB_Manual_Signal</variable>
+                    </contact>
+                    <inVariable localId="14">
                       <position x="0" y="0" />
                       <connectionPointOut />
                       <expression>T#2s</expression>
                     </inVariable>
-                    <block localId="8" typeName="TON" instanceName="tHBManual">
+                    <block localId="12" typeName="TON" instanceName="tHBManual">
                       <position x="0" y="0" />
                       <inputVariables>
-                        <variable formalParameter="IN">
+                        <variable formalParameter="IN" negated="true">
                           <connectionPointIn>
-                            <connection refLocalId="9" />
+                            <connection refLocalId="13" />
                           </connectionPointIn>
                         </variable>
                         <variable formalParameter="PT">
                           <connectionPointIn>
-                            <connection refLocalId="10" />
+                            <connection refLocalId="14" />
                           </connectionPointIn>
                         </variable>
                       </inputVariables>
@@ -1994,6 +2063,39 @@ config_outgroups();
                         </data>
                       </addData>
                     </block>
+                    <comment localId="15" height="0" width="0">
+                      <position x="0" y="0" />
+                      <content>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+                      </content>
+                    </comment>
+                    <vendorElement localId="16">
+                      <position x="0" y="0" />
+                      <alternativeText>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+                      </alternativeText>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/fbdelementtype" handleUnknown="implementation">
+                          <ElementType xmlns="">networktitle</ElementType>
+                        </data>
+                      </addData>
+                    </vendorElement>
+                    <contact localId="17" negated="true" storage="none" edge="none">
+                      <position x="0" y="0" />
+                      <connectionPointIn>
+                        <connection refLocalId="0" />
+                      </connectionPointIn>
+                      <connectionPointOut />
+                      <variable>tHBManual.Q</variable>
+                    </contact>
+                    <coil localId="18" negated="false" storage="none">
+                      <position x="0" y="0" />
+                      <connectionPointIn>
+                        <connection refLocalId="17" />
+                      </connectionPointIn>
+                      <connectionPointOut />
+                      <variable>GVL_HeartBeat.HB_Manual_OK</variable>
+                    </coil>
                     <rightPowerRail localId="2147483646">
                       <position x="0" y="0" />
                       <connectionPointIn>
@@ -2004,10 +2106,10 @@ config_outgroups();
                             </data>
                           </addData>
                         </connection>
-                        <connection refLocalId="8" formalParameter="">
+                        <connection refLocalId="12" formalParameter="">
                           <addData>
                             <data name="http://www.3s-software.com/plcopenxml/ldbranchid" handleUnknown="implementation">
-                              <BranchId xmlns="">3</BranchId>
+                              <BranchId xmlns="">4</BranchId>
                             </data>
                           </addData>
                         </connection>
@@ -3297,6 +3399,7 @@ config_outgroups();
             <Object Name="EStation" ObjectId="b0f5250c-ab0a-4ee0-8ea3-eb68a42dfe8b" />
             <Object Name="EStates" ObjectId="71500b0c-0575-40e0-91ef-6cd2952ca44b" />
             <Object Name="HeartBeat" ObjectId="d7409722-4844-4629-9bf4-6a5e73b68fbb" />
+            <Object Name="GVL_HeartBeat" ObjectId="cfd39f62-a8d3-47ae-aac6-de2a30895164" />
           </Object>
         </Object>
         <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
