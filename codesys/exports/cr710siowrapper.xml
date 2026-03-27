@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-03-27T07:40:54.5376075" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-26T15:54:51.617764" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-27T11:16:15.6268704" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-27T11:15:41.6902549" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1383,187 +1383,16 @@
               </data>
             </addData>
           </globalVars>
-          <globalVars name="GVL_IO">
-            <variable name="ReqManual">
-              <type>
-                <BOOL />
-              </type>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Request takeover</xhtml>
-              </documentation>
-            </variable>
-            <variable name="ReqRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="RelManual">
-              <type>
-                <BOOL />
-              </type>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Release control</xhtml>
-              </documentation>
-            </variable>
-            <variable name="RelRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="AckManual">
-              <type>
-                <BOOL />
-              </type>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Acknowledge</xhtml>
-              </documentation>
-            </variable>
-            <variable name="AckRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_RequestManual">
-              <type>
-                <BOOL />
-              </type>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Lamps / outputs</xhtml>
-              </documentation>
-            </variable>
-            <variable name="Lamp_RequestRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_GrantedManual">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_GrantedRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_Pending">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_ActiveManual">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_ActiveRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_Released">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_PendingReady">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_Remote_No_HeartBeat">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_Manual_No_HeartBeat">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_FailSafe">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <addData>
-              <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                <Attributes>
-                  <Attribute Name="qualified_only" Value="" />
-                </Attributes>
-              </data>
-              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                <ObjectId>288d1e55-7059-44b4-a6df-b308ba778233</ObjectId>
-              </data>
-            </addData>
-          </globalVars>
-          <globalVars name="GVL_State">
-            <variable name="State">
-              <type>
-                <derived name="EStates" />
-              </type>
-            </variable>
-            <variable name="Active">
-              <type>
-                <derived name="EStation" />
-              </type>
-              <initialValue>
-                <simpleValue value="EStation.Manual" />
-              </initialValue>
-            </variable>
-            <variable name="Pending">
-              <type>
-                <derived name="EStation" />
-              </type>
-            </variable>
-            <variable name="Released">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="PendingReady">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="FailSafe">
-              <type>
-                <BOOL />
-              </type>
-              <initialValue>
-                <simpleValue value="FALSE" />
-              </initialValue>
-            </variable>
-            <variable name="GrantedManual">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="GrantedRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <addData>
-              <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                <Attributes>
-                  <Attribute Name="qualified_only" Value="" />
-                </Attributes>
-              </data>
-              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                <ObjectId>74e480e1-e3dc-4c85-b650-cd7e5e9e34f1</ObjectId>
-              </data>
-            </addData>
-          </globalVars>
           <addData>
             <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
-              <dataType name="EStation">
+              <dataType name="EControlMode">
                 <baseType>
                   <enum>
                     <values>
-                      <value name="Manual" />
-                      <value name="Remote" />
-                      <value name="None" />
+                      <value name="INIT" />
+                      <value name="MANUAL" />
+                      <value name="REMOTE" />
+                      <value name="NONE" />
                     </values>
                   </enum>
                 </baseType>
@@ -1571,13 +1400,13 @@
                   <data name="http://www.3s-software.com/plcopenxml/enumvaluedocumentation" handleUnknown="implementation">
                     <EnumValueDocumentation>
                       <EnumValue>
-                        <Name>Manual</Name>
+                        <Name>MANUAL</Name>
                         <Documentation>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">prio 1</xhtml>
                         </Documentation>
                       </EnumValue>
                       <EnumValue>
-                        <Name>Remote</Name>
+                        <Name>REMOTE</Name>
                         <Documentation>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">prio 2</xhtml>
                         </Documentation>
@@ -1597,17 +1426,39 @@
               </dataType>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
-              <dataType name="EStates">
+              <dataType name="ETransitionState">
                 <baseType>
                   <enum>
                     <values>
-                      <value name="Stable" />
-                      <value name="PendingAck" />
-                      <value name="FailSafe" />
+                      <value name="STABLE" />
+                      <value name="PENDING_ACK" />
+                      <value name="FAILSAFE" />
                     </values>
                   </enum>
                 </baseType>
                 <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/enumvaluedocumentation" handleUnknown="implementation">
+                    <EnumValueDocumentation>
+                      <EnumValue>
+                        <Name>STABLE</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">No transition</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                      <EnumValue>
+                        <Name>PENDING_ACK</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">Transition in progress, waiting for acknowledgement</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                      <EnumValue>
+                        <Name>FAILSAFE</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml"> We're in failsafe, no transition allowed</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                    </EnumValueDocumentation>
+                  </data>
                   <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                     <Attributes>
                       <Attribute Name="qualified_only" Value="" />
@@ -1618,177 +1469,10 @@
                     <ObjectId>71500b0c-0575-40e0-91ef-6cd2952ca44b</ObjectId>
                   </data>
                 </addData>
+                <documentation>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml"> Where the system is in the transition process</xhtml>
+                </documentation>
               </dataType>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="PLC_PRG" pouType="program">
-                <interface>
-                  <localVars>
-                    <variable name="fbHB_Manual">
-                      <type>
-                        <derived name="FB_HeartBeat" />
-                      </type>
-                    </variable>
-                    <variable name="fbHB_REmote">
-                      <type>
-                        <derived name="FB_HeartBeat" />
-                      </type>
-                    </variable>
-                    <variable name="fbHBGen_Manual">
-                      <type>
-                        <derived name="FB_HeartBeatGenerator" />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Request takeover
-ReqManual: BOOL; 
-ReqRemote: BOOL; 
- Release control
-RelManual : BOOL;
-RelRemote : BOOL;
-Acknowledge read
-AckManual: BOOL; 
-AckRemote: BOOL; 
-State : EStates; 
-Active : EStation := EStation.Manual; 
-Pending: EStation; 
-Released : BOOL;
-PendingReady : BOOL;
-FailSafe: BOOL := FALSE; 
-HeartBeat generator</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="fbHBGen_Remote">
-                      <type>
-                        <derived name="FB_HeartBeatGEnerator" />
-                      </type>
-                    </variable>
-                  </localVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">//CR710S_Config(); 			//IO Configuration
-
-IOWrapper.READ_INPUTS(); 	//Call IOWrapper Main Program and Read Data from Inputs   
-
-							//Put your Application program here 
-//Inputs till logik
-GVL_IO.ReqManual := CR710S_IOs.IN0000;
-GVL_IO.ReqRemote := CR710S_IOs.IN0001;
-GVL_IO.AckManual := CR710S_IOs.IN0002;
-GVL_IO.AckRemote := CR710S_IOs.IN0003;
-GVL_IO.RelManual := CR710S_IOs.IN0100;
-GVL_IO.RelRemote := CR710S_IOs.IN0101;
-
-//HeartBeat generator 
-fbHBGen_Manual();
-fbHBGen_Remote();
-
-GVL_HeartBeat.HB_Manual_Signal := fbHBGen_Manual.xSignal;
-GVL_HeartBeat.HB_Remote_Signal := fbHBGen_Remote.xSignal;
-
-//HeartBeat signaler från inputs
-//GVL_HeartBeat.HB_Manual_Signal	:= CR710S_IOs.IN0102;
-//GVL_HeartBeat.HB_Remote_Signal 	:= CR710S_IOs.IN0103;
-
-// Kör heartbeat-block
-fbHB_Manual(xSignal := GVL_HeartBeat.HB_Manual_Signal);
-fbHB_Remote(xSignal := GVL_HeartBeat.HB_Remote_Signal);
-
-//Spara resultatet i GVL
-GVL_HeartBeat.HB_Manual_OK	:= fbHB_Manual.xOk;
-GVL_HeartBeat.HB_Remote_OK	:= fbHB_Remote.xOk;
-
-IF (GVL_State.Active = EStation.Manual AND NOT GVL_HeartBeat.HB_Manual_OK) OR 
-	(GVL_State.Active = EStation.Remote AND NOT GVL_HeartBeat.HB_Remote_OK) THEN
-	GVL_State.FailSafe := TRUE;
-END_IF;
-
-CASE GVL_State.State OF 
-	EStates.Stable: 
-		GVL_State.Pending := EStation.None; //No takeover in progress
-		IF GVL_State.FailSafe THEN
-			GVL_State.Pending := EStation.None;
-			GVL_State.State := EStates.Stable;
-		
-		ELSIF GVL_IO.ReqManual AND NOT GVL_IO.ReqRemote AND GVL_State.Active &lt;&gt; EStation.Manual AND GVL_HeartBeat.HB_Manual_OK THEN 
-			GVL_State.Pending := EStation.Manual;
-			GVL_State.State := EStates.PendingAck;
-
-			ELSIF GVL_IO.ReqRemote AND NOT GVL_IO.ReqManual AND GVL_State.Active &lt;&gt; EStation.Remote AND GVL_HeartBeat.HB_Remote_OK THEN
-				GVL_State.Pending := EStation.Remote;
-				GVL_State.State := EStates.PendingAck;
-		END_IF
-	EStates.PendingAck: 
-		IF GVL_State.FailSafe THEN
-			GVL_State.Pending := EStation.None;
-			GVL_State.State := EStates.Stable;
-		
-		ELSIF (GVL_State.GrantedManual AND (NOT GVL_IO.ReqManual OR NOT GVL_HeartBeat.HB_Manual_OK)) OR (GVL_State.GrantedRemote AND (NOT GVL_IO.ReqRemote OR NOT GVL_HeartBeat.HB_Remote_OK)) THEN 
-			GVL_State.Pending := EStation.None; 
-			GVL_State.State := EStates.Stable; 
-  
-			ELSE
-				//Has the current active station released control?
-				GVL_State.Released := (GVL_State.Active = EStation.Manual AND GVL_IO.RelManual) OR (GVL_State.Active = EStation.Remote AND GVL_IO.RelRemote);
-		
-				// Is the new Pending station ready to take control?
-				GVL_State.PendingReady := (GVL_State.Pending = EStation.Manual AND GVL_IO.AckManual) OR (GVL_State.Pending = EStation.Remote AND GVL_IO.AckRemote);
-		
-				// Switch only when both are true
-				IF GVL_State.Released AND GVL_State.PendingReady THEN
-					GVL_State.Active := GVL_State.Pending; 
-					GVL_State.Pending := EStation.None;
-					GVL_State.State := EStates.Stable;
-					//Testar att ta bort dessa
-					GVL_State.Released := FALSE; 
-					GVL_IO.ReqRemote := FALSE; 
-					GVL_IO.ReqManual := FALSE; 
-				END_IF
-		END_IF
-		
-END_CASE
-
-GVL_State.GrantedManual := (GVL_State.Pending = EStation.Manual); 
-GVL_State.GrantedRemote := (GVL_State.Pending = EStation.Remote); 
-
-
-GVL_IO.Lamp_RequestManual := GVL_IO.ReqManual; 
-GVL_IO.Lamp_RequestRemote := GVL_IO.ReqRemote; 
-
-GVL_IO.Lamp_GrantedManual := GVL_State.GrantedManual; 
-GVL_IO.Lamp_GrantedRemote := GVL_State.GrantedRemote;
-
-GVL_IO.Lamp_Pending := (GVL_State.State = EStates.PendingAck); 
-
-GVL_IO.Lamp_ActiveManual := (GVL_State.Active = EStation.Manual);
-GVL_IO.Lamp_ActiveRemote := (GVL_State.Active = EStation.Remote);
-
-GVL_IO.Lamp_Released := GVL_State.Released;
-GVL_IO.Lamp_PendingReady := GVL_State.PendingReady;
-
-GVL_IO.Lamp_Remote_No_HeartBeat := GVL_IO.ReqRemote AND (NOT GVL_HeartBeat.HB_Remote_OK);
-GVL_IO.Lamp_Manual_No_HeartBeat := GVL_IO.ReqManual AND (NOT GVL_HeartBeat.HB_Manual_OK);
-
-GVL_IO.Lamp_FailSafe := GVL_State.FailSafe;
-
-//Outputs från logik
-//CR710s_IOs.OUT0000 := Lamp_ActiveManual;
-//CR710S_IOs.OUT0001 := Lamp_ActiveRemote;
-//CR710S_IOs.OUT0002 := Lamp_Pending;
-//CR710S_IOs.OUT0003 := Lamp_FailSafe;
-  
-IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
-
-
-</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>a45e625f-1b31-4fd3-900b-f9f443a5cee1</ObjectId>
-                  </data>
-                </addData>
-              </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="CR710S_Config" pouType="program">
@@ -2287,54 +1971,149 @@ xOk := NOT tonTimeout.Q;
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="FB_HeartBeatGenerator" pouType="functionBlock">
+              <pou name="ControlUnit" pouType="functionBlock">
                 <interface>
-                  <outputVars>
-                    <variable name="xSignal">
+                  <localVars>
+                    <variable name="None">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="ReqManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                  </outputVars>
-                  <localVars>
-                    <variable name="tonToggle">
+                    <variable name="ReqRemote">
                       <type>
-                        <derived name="TON" />
+                        <BOOL />
                       </type>
                     </variable>
-                    <variable name="xEnable">
+                    <variable name="State">
+                      <type>
+                        <derived name="ETransitionState" />
+                      </type>
+                    </variable>
+                    <variable name="Active">
+                      <type>
+                        <derived name="EControlMode" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="EControlMode.MANUAL" />
+                      </initialValue>
+                    </variable>
+                    <variable name="Pending">
+                      <type>
+                        <derived name="EControlMode" />
+                      </type>
+                    </variable>
+                    <variable name="GrantedManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="GrantedRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Released">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="PendingReady">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="FailSafe">
                       <type>
                         <BOOL />
                       </type>
                       <initialValue>
-                        <simpleValue value="TRUE" />
+                        <simpleValue value="FALSE" />
                       </initialValue>
                     </variable>
                   </localVars>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">//Start timer
-tonToggle(IN := xEnable, PT := T#200MS);
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE State OF 
+	ETransitionState.Stable: 
+		Pending := EControlMode.None; //No takeover in progress
+		IF FailSafe THEN
+			Pending := EControlMode.None;
+			State := ETransitionState.Stable;
+		
+		ELSIF ReqManual AND NOT ReqRemote AND Active &lt;&gt; EControlMode.Manual AND GVL_HeartBeat.HB_Manual_OK THEN 
+			Pending := EControlMode.Manual;
+			State := ETransitionState.PENDING_ACK;
 
-//När timer gått, växla signal
-IF tonToggle.Q THEN
-	xSignal := NOT xSignal;
-	xEnable := FALSE;
-ELSE
-	xEnable := TRUE;
-END_IF;</xhtml>
+			ELSIF ReqRemote AND NOT ReqManual AND Active &lt;&gt; EControlMode.Remote AND GVL_HeartBeat.HB_Remote_OK THEN
+				Pending := EControlMode.Remote;
+				State := ETransitionState.PENDING_ACK;
+		END_IF
+	ETransitionState.PENDING_ACK: 
+		IF FailSafe THEN
+			Pending := EControlMode.None;
+			State := ETransitionState.Stable;
+		
+		ELSIF (GrantedManual AND (NOT ReqManual OR NOT GVL_HeartBeat.HB_Manual_OK)) OR (GrantedRemote AND (NOT ReqRemote OR NOT GVL_HeartBeat.HB_Remote_OK)) THEN 
+			Pending := EControlMode.None; 
+			State := ETransitionState.Stable; 
+  
+			ELSE
+				//Has the current active station released control?
+				Released := (Active = EControlMode.Manual AND RelManual) OR (Active = EControlMode.Remote AND RelRemote);
+		
+				// Is the new Pending station ready to take control?
+				PendingReady := (Pending = EControlMode.Manual AND AckManual) OR (Pending = EControlMode.Remote AND AckRemote);
+		
+				// Switch only when both are true
+				IF Released AND PendingReady THEN
+					Active := Pending; 
+					Pending := EControlMode.None;
+					State := ETransitionState.Stable;
+					//Testar att ta bort dessa
+					Released := FALSE; 
+					ReqRemote := FALSE; 
+					ReqManual := FALSE; 
+				END_IF
+		END_IF
+		
+END_CASE</xhtml>
                   </ST>
                 </body>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>ac4ae937-0ee2-4d82-9718-09ca5fac1b4a</ObjectId>
+                    <ObjectId>6adbd4bb-a0f3-4a74-b1dc-b729825b6315</ObjectId>
                   </data>
                 </addData>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="MonitoringChannel" pouType="functionBlock">
+              <pou name="InputProcessing" pouType="functionBlock">
                 <interface />
                 <body>
                   <ST>
@@ -2343,13 +2122,13 @@ END_IF;</xhtml>
                 </body>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>5c3c56e9-408a-4007-b6a6-e6c36d020668</ObjectId>
+                    <ObjectId>4f273eba-3353-4884-b4b5-9069660833e2</ObjectId>
                   </data>
                 </addData>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="ControlUnit" pouType="functionBlock">
+              <pou name="OutputProcessing" pouType="functionBlock">
                 <interface />
                 <body>
                   <ST>
@@ -2358,7 +2137,247 @@ END_IF;</xhtml>
                 </body>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>4fc2869d-8239-4d69-8cc4-faeac2a45cf9</ObjectId>
+                    <ObjectId>68d01b2d-e626-4b9c-a105-7e021ee89613</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="PLC_PRG" pouType="program">
+                <interface>
+                  <localVars>
+                    <variable name="fbHB_Manual">
+                      <type>
+                        <derived name="FB_HeartBeat" />
+                      </type>
+                    </variable>
+                    <variable name="fbHB_REmote">
+                      <type>
+                        <derived name="FB_HeartBeat" />
+                      </type>
+                    </variable>
+                    <variable name="ReqManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Request takeover</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="ReqRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Release control</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="RelRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">Acknowledge read</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="AckRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="State">
+                      <type>
+                        <derived name="ETransitionState" />
+                      </type>
+                    </variable>
+                    <variable name="Active">
+                      <type>
+                        <derived name="EControlMode" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="EControlMode.Manual" />
+                      </initialValue>
+                    </variable>
+                    <variable name="Pending">
+                      <type>
+                        <derived name="EControlMode" />
+                      </type>
+                    </variable>
+                    <variable name="Released">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="PendingReady">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="FailSafe">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="FALSE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="GrantedManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">Granted</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="GrantedRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_RequestManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_RequestRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_GrantedManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_GrantedRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_Pending">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_ActiveManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_ActiveRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_Released">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_PendingReady">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_Remote_No_HeartBeat">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_Manual_No_HeartBeat">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Lamp_FailSafe">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">//CR710S_Config(); 			//IO Configuration
+
+IOWrapper.READ_INPUTS(); 	//Call IOWrapper Main Program and Read Data from Inputs   
+
+							//Put your Application program here 
+//Inputs till logik
+ReqManual := CR710S_IOs.IN0000;
+ReqRemote := CR710S_IOs.IN0001;
+AckManual := CR710S_IOs.IN0002;
+AckRemote := CR710S_IOs.IN0003;
+RelManual := CR710S_IOs.IN0100;
+RelRemote := CR710S_IOs.IN0101;
+
+//HeartBeat signaler från inputs
+GVL_HeartBeat.HB_Manual_Signal	:= CR710S_IOs.IN0102;
+GVL_HeartBeat.HB_Remote_Signal 	:= CR710S_IOs.IN0103;
+
+// Kör heartbeat-block
+fbHB_Manual(xSignal := GVL_HeartBeat.HB_Manual_Signal);
+fbHB_Remote(xSignal := GVL_HeartBeat.HB_Remote_Signal);
+
+//Spara resultatet i GVL
+GVL_HeartBeat.HB_Manual_OK	:= fbHB_Manual.xOk;
+GVL_HeartBeat.HB_Remote_OK	:= fbHB_Remote.xOk;
+
+IF (Active = EControlMode.MANUAL AND NOT GVL_HeartBeat.HB_Manual_OK) OR 
+	(Active = EControlMode.REMOTE AND NOT GVL_HeartBeat.HB_Remote_OK) THEN
+	FailSafe := TRUE;
+END_IF;
+
+
+
+GrantedManual := (Pending = EControlMode.Manual); 
+GrantedRemote := (Pending = EControlMode.Remote); 
+
+
+Lamp_RequestManual := ReqManual; 
+Lamp_RequestRemote := ReqRemote; 
+
+Lamp_GrantedManual := GrantedManual; 
+Lamp_GrantedRemote := GrantedRemote;
+
+Lamp_Pending := (State = ETransitionState.PENDING_ACK); 
+
+Lamp_ActiveManual := (Active = EControlMode.Manual);
+Lamp_ActiveRemote := (Active = EControlMode.Remote);
+
+Lamp_Released := Released;
+Lamp_PendingReady := PendingReady;
+
+Lamp_Remote_No_HeartBeat := ReqRemote AND (NOT GVL_HeartBeat.HB_Remote_OK);
+Lamp_Manual_No_HeartBeat := ReqManual AND (NOT GVL_HeartBeat.HB_Manual_OK);
+
+Lamp_FailSafe := FailSafe;
+
+//Outputs från logik
+//CR710s_IOs.OUT0000 := Lamp_ActiveManual;
+//CR710S_IOs.OUT0001 := Lamp_ActiveRemote;
+//CR710S_IOs.OUT0002 := Lamp_Pending;
+//CR710S_IOs.OUT0003 := Lamp_FailSafe;
+  
+IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
+
+
+</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>a45e625f-1b31-4fd3-900b-f9f443a5cee1</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -2375,7 +2394,7 @@ END_IF;</xhtml>
                 <DeviceIdentification>
                   <Type>4097</Type>
                   <Id>0000 0002</Id>
-                  <Version>3.5.11.60</Version>
+                  <Version>3.5.11.50</Version>
                 </DeviceIdentification>
                 <Connector moduleType="40000" interface="ifm:SystemR360III" connectorId="1">
                   <HostParameterSet />
@@ -3628,23 +3647,21 @@ END_IF;</xhtml>
             <Object Name="System_Outputs" ObjectId="8a3a383a-fec4-4298-8adf-1348f4884f9e" />
           </Object>
           <Object Name="Application" ObjectId="f9c00bdb-2f18-4e80-863e-6da977e8f304">
-            <Object Name="PLC_PRG" ObjectId="a45e625f-1b31-4fd3-900b-f9f443a5cee1" />
             <Object Name="Task" ObjectId="12674cf4-d25e-4151-96b2-08a6cc6d1e52" />
             <Object Name="CR710S_Config" ObjectId="47b983a9-d53f-49e6-bcee-eb4ac70f4850">
               <Object Name="config_inputs" ObjectId="7e9e7af3-857e-47dc-b598-56d5d9eb665b" />
               <Object Name="config_outgroups" ObjectId="3a27c8bc-c9c8-4536-96db-b44cca192ab7" />
               <Object Name="config_outputs" ObjectId="258c4e0b-bfa2-4c99-8464-f5af38d0fed3" />
             </Object>
-            <Object Name="EStation" ObjectId="b0f5250c-ab0a-4ee0-8ea3-eb68a42dfe8b" />
-            <Object Name="EStates" ObjectId="71500b0c-0575-40e0-91ef-6cd2952ca44b" />
+            <Object Name="EControlMode" ObjectId="b0f5250c-ab0a-4ee0-8ea3-eb68a42dfe8b" />
+            <Object Name="ETransitionState" ObjectId="71500b0c-0575-40e0-91ef-6cd2952ca44b" />
             <Object Name="HeartBeat" ObjectId="d7409722-4844-4629-9bf4-6a5e73b68fbb" />
             <Object Name="GVL_HeartBeat" ObjectId="1ba4fcd4-7340-440d-ac0f-da43218d56a3" />
             <Object Name="FB_HeartBeat" ObjectId="2af87149-06e6-47ae-aa30-3f298237bbf7" />
-            <Object Name="FB_HeartBeatGenerator" ObjectId="ac4ae937-0ee2-4d82-9718-09ca5fac1b4a" />
-            <Object Name="MonitoringChannel" ObjectId="5c3c56e9-408a-4007-b6a6-e6c36d020668" />
-            <Object Name="ControlUnit" ObjectId="4fc2869d-8239-4d69-8cc4-faeac2a45cf9" />
-            <Object Name="GVL_IO" ObjectId="288d1e55-7059-44b4-a6df-b308ba778233" />
-            <Object Name="GVL_State" ObjectId="74e480e1-e3dc-4c85-b650-cd7e5e9e34f1" />
+            <Object Name="ControlUnit" ObjectId="6adbd4bb-a0f3-4a74-b1dc-b729825b6315" />
+            <Object Name="InputProcessing" ObjectId="4f273eba-3353-4884-b4b5-9069660833e2" />
+            <Object Name="OutputProcessing" ObjectId="68d01b2d-e626-4b9c-a105-7e021ee89613" />
+            <Object Name="PLC_PRG" ObjectId="a45e625f-1b31-4fd3-900b-f9f443a5cee1" />
           </Object>
         </Object>
         <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
