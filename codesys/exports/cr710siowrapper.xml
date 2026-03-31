@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-31T16:25:13.9179068" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-31T16:25:00.075448" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-31T16:49:15.8982599" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-31T16:49:01.5290604" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1774,6 +1774,11 @@ END_IF</xhtml>
                         <derived name="IntegrityCheck" />
                       </type>
                     </variable>
+                    <variable name="fbDecisionLogger">
+                      <type>
+                        <derived name="DecisionLogger" />
+                      </type>
+                    </variable>
                     <variable name="fbHBGen_Manual">
                       <type>
                         <derived name="FB_HeartBeatGenerator" />
@@ -1850,6 +1855,12 @@ fbOutputProcessing(
     HB_Remote_OK    := GVL_HeartBeat.HB_Remote_OK
 );
 
+fbDecisionLogger( 
+	Active := fbControlUnit.Active,
+	Pending := fbControlUnit.Pending,   
+	State := fbControlUnit.State
+); 
+	
 OUT0000.VAR_IN.xValue := fbOutputProcessing.Out_GrantedManual;
 OUT0001.VAR_IN.xValue := fbOutputProcessing.Out_GrantedRemote;
 OUT0002.VAR_IN.xValue := fbOutputProcessing.Out_ActiveManual;
@@ -2760,6 +2771,64 @@ HB_Remote_Out := HB_Remote_Signal;</xhtml>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>263bd72f-75ce-487e-b3b8-ec7f9d153e59</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="DecisionLogger" pouType="functionBlock">
+                <interface>
+                  <inputVars>
+                    <variable name="Active">
+                      <type>
+                        <derived name="EControlMode" />
+                      </type>
+                    </variable>
+                    <variable name="Pending">
+                      <type>
+                        <derived name="EPendingMode" />
+                      </type>
+                    </variable>
+                    <variable name="State">
+                      <type>
+                        <derived name="ETransitionState" />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <localVars>
+                    <variable name="LastActive">
+                      <type>
+                        <derived name="EControlMode" />
+                      </type>
+                    </variable>
+                    <variable name="LastPending">
+                      <type>
+                        <derived name="EPendingMode" />
+                      </type>
+                    </variable>
+                    <variable name="LastState">
+                      <type>
+                        <derived name="ETransitionState" />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Active &lt;&gt; LastActive OR Pending &lt;&gt; LastPending OR State &lt;&gt; LastState THEN 
+	GVL_State.Active := Active; 
+	GVL_State.Pending := Pending; 
+	GVL_State.State := State;
+
+	LastActive := Active; 
+ 	LastPending := Pending; 
+	LastState := State; 
+END_IF</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>88b66225-4fdc-4441-be38-787ded55e262</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -4027,6 +4096,7 @@ HB_Remote_Out := HB_Remote_Signal;</xhtml>
             <Object Name="GVL_IO" ObjectId="87c52e7c-9b3e-4847-bbff-8652888fb5e7" />
             <Object Name="GVL_State" ObjectId="5c4a4848-76ab-49ed-92a5-267a71e47b4e" />
             <Object Name="IntegrityCheck" ObjectId="263bd72f-75ce-487e-b3b8-ec7f9d153e59" />
+            <Object Name="DecisionLogger" ObjectId="88b66225-4fdc-4441-be38-787ded55e262" />
           </Object>
         </Object>
         <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
