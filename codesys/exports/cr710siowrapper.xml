@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-31T16:00:12.1569844" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-31T15:59:59.6131048" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-31T16:25:13.9179068" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-31T16:25:00.075448" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1769,6 +1769,11 @@ END_IF</xhtml>
                         <derived name="OutputProcessing" />
                       </type>
                     </variable>
+                    <variable name="fbIntegrityCheck">
+                      <type>
+                        <derived name="IntegrityCheck" />
+                      </type>
+                    </variable>
                     <variable name="fbHBGen_Manual">
                       <type>
                         <derived name="FB_HeartBeatGenerator" />
@@ -1819,6 +1824,17 @@ fbControlUnit(
     RelRemote   := fbInputProcessing.RelRemote,
 	HB_Manual_OK := GVL_HeartBeat.HB_Manual_OK,
 	HB_Remote_OK := GVL_HeartBeat.HB_Remote_OK
+);
+
+fbIntegrityCheck(
+    ReqManual        := fbInputProcessing.ReqManual,
+    ReqRemote        := fbInputProcessing.ReqRemote,
+    AckManual        := fbInputProcessing.AckManual,
+    AckRemote        := fbInputProcessing.AckRemote,
+    RelManual        := fbInputProcessing.RelManual,
+    RelRemote        := fbInputProcessing.RelRemote,
+    HB_Manual_Signal := fbInputProcessing.HB_Manual_Signal,
+    HB_Remote_Signal := fbInputProcessing.HB_Remote_Signal
 );
 
 fbOutputProcessing(
@@ -2409,7 +2425,6 @@ ReqRemote 			:= IN0600.VAR_OUT.xValueDigital;
 AckRemote 			:= IN0601.VAR_OUT.xValueDigital; 
 RelRemote 			:= IN0602.VAR_OUT.xValueDigital; 
 HB_Remote_Signal	:= IN0603.VAR_OUT.xValueDigital;
-
 </xhtml>
                   </ST>
                 </body>
@@ -2620,10 +2635,126 @@ END_IF;</xhtml>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="IntegrityCheck" pouType="functionBlock">
-                <interface />
+                <interface>
+                  <inputVars>
+                    <variable name="ReqManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ReqRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Manual_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <outputVars>
+                    <variable name="Valid">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> All signals passed sanity check</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="ReqManual_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ReqRemote_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckManual_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckRemote_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelManual_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelRemote_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Manual_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </outputVars>
+                </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF (ReqManual AND ReqRemote) OR
+   (ReqManual AND RelManual) OR
+   (ReqRemote AND RelRemote) THEN
+   	Valid        := FALSE;
+    ReqManual_Out := FALSE;
+    ReqRemote_Out := FALSE;
+    AckManual_Out := FALSE;
+    AckRemote_Out := FALSE;
+    RelManual_Out := FALSE;
+    RelRemote_Out := FALSE;
+    HB_Manual_Out := HB_Manual_Signal;
+	HB_Remote_Out := HB_Remote_Signal;
+    RETURN;
+END_IF
+
+Valid         := TRUE;
+ReqManual_Out := ReqManual;
+ReqRemote_Out := ReqRemote;
+AckManual_Out := AckManual;
+AckRemote_Out := AckRemote;
+RelManual_Out := RelManual;
+RelRemote_Out := RelRemote;
+HB_Manual_Out := HB_Manual_Signal;
+HB_Remote_Out := HB_Remote_Signal;</xhtml>
                   </ST>
                 </body>
                 <addData>
