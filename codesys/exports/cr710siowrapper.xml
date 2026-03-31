@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-30T16:43:06.1527687" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-30T16:42:54.5343035" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-31T14:51:45.0415822" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-31T14:51:15.5499322" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1372,6 +1372,38 @@
               </data>
             </addData>
           </task>
+          <globalVars name="GVL_HeartBeat">
+            <variable name="HB_Remote_Signal">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Manual_Signal">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Manual_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Remote_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                <Attributes>
+                  <Attribute Name="qualified_only" Value="" />
+                </Attributes>
+              </data>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>1ba4fcd4-7340-440d-ac0f-da43218d56a3</ObjectId>
+              </data>
+            </addData>
+          </globalVars>
           <globalVars name="GVL_IO">
             <variable name="ReqManual">
               <type>
@@ -1535,38 +1567,6 @@
               </data>
               <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                 <ObjectId>5c4a4848-76ab-49ed-92a5-267a71e47b4e</ObjectId>
-              </data>
-            </addData>
-          </globalVars>
-          <globalVars name="GVL_HeartBeat">
-            <variable name="HB_Remote_Signal">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="HB_Manual_Signal">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="HB_Manual_OK">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="HB_Remote_OK">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <addData>
-              <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                <Attributes>
-                  <Attribute Name="qualified_only" Value="" />
-                </Attributes>
-              </data>
-              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                <ObjectId>1ba4fcd4-7340-440d-ac0f-da43218d56a3</ObjectId>
               </data>
             </addData>
           </globalVars>
@@ -1749,11 +1749,15 @@ IOWrapper.READ_INPUTS(); 	//Call IOWrapper Main Program and Read Data from Input
 
 fbInputProcessing();
 
-fbHBGen_Manual(); 
-fbHBGen_Remote(); 
-
 GVL_HeartBeat.HB_Manual_Signal := fbInputProcessing.HB_Manual_Signal;
 GVL_HeartBeat.HB_Remote_Signal := fbInputProcessing.HB_Remote_Signal;
+
+fbHB_Manual(xSignal := GVL_HeartBeat.HB_Manual_Signal); 
+fbHB_Remote(xSignal := GVL_HeartBeat.HB_Remote_Signal); 
+
+//Heartbeat generator
+fbHBGen_Manual(); 
+fbHBGen_Remote(); 
 							//Put your Application program here 
 
 fbControlUnit(
@@ -1762,7 +1766,9 @@ fbControlUnit(
     AckManual   := fbInputProcessing.AckManual,
     AckRemote   := fbInputProcessing.AckRemote,
     RelManual   := fbInputProcessing.RelManual,
-    RelRemote   := fbInputProcessing.RelRemote
+    RelRemote   := fbInputProcessing.RelRemote,
+	HB_Manual_OK := GVL_HeartBeat.HB_Manual_OK,
+	HB_Remote_OK := GVL_HeartBeat.HB_Remote_OK
 );
 
 fbOutputProcessing(
@@ -1770,17 +1776,14 @@ fbOutputProcessing(
     ReqRemote       := fbInputProcessing.ReqRemote,
     GrantedManual   := fbControlUnit.GrantedManual,
     GrantedRemote   := fbControlUnit.GrantedRemote,
+	Released 		:= fbControlUnit.Released,
+	PendingReady 	:= fbControlUnit.PendingReady,
     Active          := fbControlUnit.Active,
     State           := fbControlUnit.State,
     HB_Manual_OK    := GVL_HeartBeat.HB_Manual_OK,
     HB_Remote_OK    := GVL_HeartBeat.HB_Remote_OK
 );
 
-
-
-//HeartBeat generator
-fbHBGen_Manual();
-fbHBGen_Remote();
 
 IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
 
@@ -1812,15 +1815,20 @@ IN0500.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
 IN0501.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
 IN0502.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
 IN0503.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
+
 (* Multifuntional Inputs *) 
-IN0100.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
-IN0101.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
-IN0102.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
-IN0103.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);            				
-IN0600.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
-IN0601.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
-IN0602.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
-IN0603.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
+// MANUAL STATION INPUTS 			
+IN0100.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
+IN0101.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
+IN0102.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
+IN0103.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_1);   
+         		
+// REMOTE STATION INPUTS		
+IN0600.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
+IN0601.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
+IN0602.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
+IN0603.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_1);
+
 (* Resistopr Inputs *)      	
 IN0400.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
 IN0401.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
@@ -1976,6 +1984,58 @@ config_outgroups();
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="FB_HeartBeat" pouType="functionBlock">
+                <interface>
+                  <inputVars>
+                    <variable name="xSignal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <outputVars>
+                    <variable name="xOk">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </outputVars>
+                  <localVars>
+                    <variable name="tonTimeout">
+                      <type>
+                        <derived name="TON" />
+                      </type>
+                    </variable>
+                    <variable name="xPrevSignal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xPulse">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">xPulse := (xSignal &lt;&gt; xPrevSignal);
+xPrevSignal := xSignal;
+// Om ingen ny puls kommer, låt timern gå 
+tonTimeout(IN := NOT xPulse, PT := T#500MS);
+xOk := NOT tonTimeout.Q;
+</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>2af87149-06e6-47ae-aa30-3f298237bbf7</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="ControlUnit" pouType="functionBlock">
                 <interface>
                   <inputVars>
@@ -2111,22 +2171,14 @@ IF Active = EControlMode.FAILSAFE THEN
 END_IF
 
 IF Active = EControlMode.REMOTE AND NOT HB_Remote_OK THEN
-	IF HB_Manual_OK THEN 
-		Active := EControlMode.MANUAL; 
-	ELSE
-		Active := EControlMode.FAILSAFE; 
-	END_IF
+	Active := SEL(HB_Manual_OK, EControlMode.FAILSAFE, EControlMode.MANUAL); 
 	Pending := EPendingMode.NONE; 
 	State := ETransitionState.STABLE; 
 	RETURN; 
 END_IF 
 	
 IF Active = EControlMode.MANUAL AND NOT HB_Manual_OK THEN
-	IF HB_Remote_OK THEN 
-		Active := EControlMode.REMOTE; 
-	ELSE 
-		Active := EControlMode.FAILSAFE; 
-	END_IF
+	Active := SEL(HB_Remote_OK, EControlMode.FAILSAFE, EControlMode.REMOTE); 
 	Pending := EPendingMode.NONE; 
 	State := ETransitionState.STABLE; 
 	RETURN;
@@ -2287,7 +2339,19 @@ GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// Read raw input signals from hardware
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// IN0100 group signals -- Manual
+ReqManual 			:= IN0100.VAR_OUT.xValueDigital;
+AckManual 			:= IN0101.VAR_OUT.xValueDigital; 
+RelManual 			:= IN0102.VAR_OUT.xValueDigital; 
+HB_Manual_Signal	:= IN0103.VAR_OUT.xValueDigital; 
+
+
+//IN0600 group signals -- Remote
+ReqRemote 			:= IN0600.VAR_OUT.xValueDigital; 
+AckRemote 			:= IN0601.VAR_OUT.xValueDigital; 
+RelRemote 			:= IN0602.VAR_OUT.xValueDigital; 
+HB_Remote_Signal	:= IN0603.VAR_OUT.xValueDigital;
+
 </xhtml>
                   </ST>
                 </body>
@@ -2354,62 +2418,58 @@ GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
                     </variable>
                   </inputVars>
                   <outputVars>
-                    <variable name="Lamp_RequestManual">
+                    <variable name="OUT_GrantedManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="Lamp_RequestRemote">
+                    <variable name="OUT_GrantedRemote">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="Lamp_GrantedManual">
+                    <variable name="OUT_ActiveManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="Lamp_GrantedRemote">
+                    <variable name="OUT_ActiveRemote">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="Lamp_Pending">
+                    <variable name="OUT_Pending">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="Lamp_ActiveManual">
+                    <variable name="OUT_PendingReady">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="Lamp_ActiveRemote">
+                    <variable name="OUT_Released">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="Lamp_Released">
+                    <variable name="OUT_NoHB_Manual">
                       <type>
                         <BOOL />
                       </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">loss of heartbeat</xhtml>
+                      </documentation>
                     </variable>
-                    <variable name="Lamp_PendingReady">
+                    <variable name="OUT_NoHB_Remote">
                       <type>
                         <BOOL />
                       </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">loss of heartbeat</xhtml>
+                      </documentation>
                     </variable>
-                    <variable name="Lamp_Remote_No_HeartBeat">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Lamp_Manual_No_HeartBeat">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Lamp_FailSafe">
+                    <variable name="OUT_FailSafe">
                       <type>
                         <BOOL />
                       </type>
@@ -2419,6 +2479,18 @@ GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">// Lamp outputs reflecting current system state
+OUT_GrantedManual := GrantedManual; 
+OUT_GrantedRemote := GrantedRemote; 
+OUT_ActiveManual  := (Active = EControlMode.MANUAL); 
+OUT_ActiveRemote  := (Active = EControlMode.REMOTE);
+OUT_Pending		  := (State = ETransitionState.PENDING_ACK); 
+OUT_PendingReady  := PendingReady; 
+OUT_Released	  := Released; 
+OUT_NoHB_Manual   := NOT HB_Manual_OK; 
+OUT_NoHB_Remote   := NOT HB_Remote_OK; 
+OUT_FailSafe	  := (Active = EControlMode.FAILSAFE);
+
+(*
 Lamp_RequestManual := ReqManual;
 Lamp_RequestRemote := ReqRemote;
 Lamp_GrantedManual := GrantedManual;
@@ -2431,7 +2503,7 @@ Lamp_PendingReady := PendingReady;
 Lamp_Remote_No_HeartBeat := ReqRemote AND (NOT GVL_HeartBeat.HB_Remote_OK);
 Lamp_Manual_No_HeartBeat := ReqManual AND (NOT GVL_HeartBeat.HB_Manual_OK);
 Lamp_FailSafe               := (Active = EControlMode.FAILSAFE);
-</xhtml>
+*)</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -2484,58 +2556,6 @@ END_IF;</xhtml>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>af8e6384-d04a-4e06-ab90-4153a4a3f710</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="FB_HeartBeat" pouType="functionBlock">
-                <interface>
-                  <inputVars>
-                    <variable name="xSignal">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                  </inputVars>
-                  <outputVars>
-                    <variable name="xOk">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                  </outputVars>
-                  <localVars>
-                    <variable name="tonTimeout">
-                      <type>
-                        <derived name="TON" />
-                      </type>
-                    </variable>
-                    <variable name="xPrevSignal">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xPulse">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                  </localVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">xPulse := (xSignal &lt;&gt; xPrevSignal);
-xPrevSignal := xSignal;
-// Om ingen ny puls kommer, låt timern gå 
-tonTimeout(IN := NOT xPulse, PT := T#500MS);
-xOk := NOT tonTimeout.Q;
-</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>2af87149-06e6-47ae-aa30-3f298237bbf7</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -3793,6 +3813,8 @@ xOk := NOT tonTimeout.Q;
             </Object>
             <Object Name="EControlMode" ObjectId="b0f5250c-ab0a-4ee0-8ea3-eb68a42dfe8b" />
             <Object Name="ETransitionState" ObjectId="71500b0c-0575-40e0-91ef-6cd2952ca44b" />
+            <Object Name="GVL_HeartBeat" ObjectId="1ba4fcd4-7340-440d-ac0f-da43218d56a3" />
+            <Object Name="FB_HeartBeat" ObjectId="2af87149-06e6-47ae-aa30-3f298237bbf7" />
             <Object Name="ControlUnit" ObjectId="6adbd4bb-a0f3-4a74-b1dc-b729825b6315" />
             <Object Name="InputProcessing" ObjectId="4f273eba-3353-4884-b4b5-9069660833e2" />
             <Object Name="OutputProcessing" ObjectId="68d01b2d-e626-4b9c-a105-7e021ee89613" />
@@ -3800,8 +3822,6 @@ xOk := NOT tonTimeout.Q;
             <Object Name="FB_HeartBeatGenerator" ObjectId="af8e6384-d04a-4e06-ab90-4153a4a3f710" />
             <Object Name="GVL_IO" ObjectId="87c52e7c-9b3e-4847-bbff-8652888fb5e7" />
             <Object Name="GVL_State" ObjectId="5c4a4848-76ab-49ed-92a5-267a71e47b4e" />
-            <Object Name="FB_HeartBeat" ObjectId="2af87149-06e6-47ae-aa30-3f298237bbf7" />
-            <Object Name="GVL_HeartBeat" ObjectId="1ba4fcd4-7340-440d-ac0f-da43218d56a3" />
           </Object>
         </Object>
         <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
