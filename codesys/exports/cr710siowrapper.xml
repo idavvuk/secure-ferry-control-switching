@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-31T15:40:16.3228588" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-31T15:40:03.9974365" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-31T16:00:12.1569844" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-31T15:59:59.6131048" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -111,21 +111,19 @@
               <pou name="PLC_PRG" pouType="program">
                 <interface>
                   <localVars>
-                    <variable name="x">
+                    <variable name="fbMonitoringChannel">
                       <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="y">
-                      <type>
-                        <BOOL />
+                        <derived name="MonitoringChannel" />
                       </type>
                     </variable>
                   </localVars>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">fbMonitoringChannel(
+	HB_Manual_OK := EVL.HB_Manual_OK, 
+	HB_Remote_OK := EVL.HB_Remote_OK
+);</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -137,11 +135,63 @@
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="MonitoringChannel" pouType="functionBlock">
-                <interface />
+                <interface>
+                  <inputVars>
+                    <variable name="HB_Manual_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <outputVars>
+                    <variable name="EmergencyShutdown">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </outputVars>
+                  <localVars>
+                    <variable name="fbHB_Manual_Mon">
+                      <type>
+                        <derived name="FB_HeartBeat" />
+                      </type>
+                    </variable>
+                    <variable name="fbHB_Remote_Mon">
+                      <type>
+                        <derived name="FB_HeartBeat" />
+                      </type>
+                    </variable>
+                    <variable name="HB_Manual_Fail">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Fail">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
-</xhtml>
+HB_Manual_Fail := NOT HB_Manual_OK; 
+HB_Remote_Fail := NOT HB_Remote_OK; 
+
+IF HB_Manual_Fail AND HB_Remote_Fail THEN 
+	EmergencyShutdown := TRUE; 
+END_IF
+
+
+IF EmergencyShutdown THEN 
+	RETURN
+END_IF</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -2568,6 +2618,21 @@ END_IF;</xhtml>
                 </addData>
               </pou>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="IntegrityCheck" pouType="functionBlock">
+                <interface />
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>263bd72f-75ce-487e-b3b8-ec7f9d153e59</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
               <ObjectId>f9c00bdb-2f18-4e80-863e-6da977e8f304</ObjectId>
             </data>
@@ -3830,6 +3895,7 @@ END_IF;</xhtml>
             <Object Name="FB_HeartBeatGenerator" ObjectId="af8e6384-d04a-4e06-ab90-4153a4a3f710" />
             <Object Name="GVL_IO" ObjectId="87c52e7c-9b3e-4847-bbff-8652888fb5e7" />
             <Object Name="GVL_State" ObjectId="5c4a4848-76ab-49ed-92a5-267a71e47b4e" />
+            <Object Name="IntegrityCheck" ObjectId="263bd72f-75ce-487e-b3b8-ec7f9d153e59" />
           </Object>
         </Object>
         <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
