@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-03-30T14:57:53.8430931" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-03-30T14:57:14.5251858" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-01T20:27:06.8676837" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-01T20:26:33.7174143" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1372,6 +1372,48 @@
               </data>
             </addData>
           </task>
+          <globalVars name="GVL_HeartBeat">
+            <variable name="HB_Remote_Signal">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Manual_Signal">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Auto_Signal">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Manual_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Remote_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Auto_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                <Attributes>
+                  <Attribute Name="qualified_only" Value="" />
+                </Attributes>
+              </data>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>1ba4fcd4-7340-440d-ac0f-da43218d56a3</ObjectId>
+              </data>
+            </addData>
+          </globalVars>
           <globalVars name="GVL_IO">
             <variable name="ReqManual">
               <type>
@@ -1538,38 +1580,6 @@
               </data>
             </addData>
           </globalVars>
-          <globalVars name="GVL_HeartBeat">
-            <variable name="HB_Remote_Signal">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="HB_Manual_Signal">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="HB_Manual_OK">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="HB_Remote_OK">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <addData>
-              <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                <Attributes>
-                  <Attribute Name="qualified_only" Value="" />
-                </Attributes>
-              </data>
-              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                <ObjectId>1ba4fcd4-7340-440d-ac0f-da43218d56a3</ObjectId>
-              </data>
-            </addData>
-          </globalVars>
           <addData>
             <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
               <dataType name="EControlMode">
@@ -1579,6 +1589,7 @@
                       <value name="INIT" />
                       <value name="MANUAL" />
                       <value name="REMOTE" />
+                      <value name="Auto" />
                       <value name="FAILSAFE" />
                     </values>
                   </enum>
@@ -1596,6 +1607,12 @@
                         <Name>REMOTE</Name>
                         <Documentation>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">prio 2</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                      <EnumValue>
+                        <Name>Auto</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">prio 3</xhtml>
                         </Documentation>
                       </EnumValue>
                     </EnumValueDocumentation>
@@ -1729,12 +1746,22 @@
                         <derived name="FB_HeartBeatGenerator" />
                       </type>
                     </variable>
+                    <variable name="fbHBGen_Auto">
+                      <type>
+                        <derived name="FB_HeartBeatGenerator" />
+                      </type>
+                    </variable>
                     <variable name="fbHB_Manual">
                       <type>
                         <derived name="FB_HeartBeat" />
                       </type>
                     </variable>
                     <variable name="fbHB_Remote">
+                      <type>
+                        <derived name="FB_HeartBeat" />
+                      </type>
+                    </variable>
+                    <variable name="fbHB_Auto">
                       <type>
                         <derived name="FB_HeartBeat" />
                       </type>
@@ -1751,9 +1778,11 @@ fbInputProcessing();
 
 fbHBGen_Manual(); 
 fbHBGen_Remote(); 
+fbHBGen_Auto();
 
 GVL_HeartBeat.HB_Manual_Signal := fbInputProcessing.HB_Manual_Signal;
 GVL_HeartBeat.HB_Remote_Signal := fbInputProcessing.HB_Remote_Signal;
+GVL_HeartBeat.HB_Auto_Signal := fbInputProcessing.HB_Auto_Signal;
 							//Put your Application program here 
 
 fbControlUnit(
@@ -1773,7 +1802,8 @@ fbOutputProcessing(
     Active          := fbControlUnit.Active,
     State           := fbControlUnit.State,
     HB_Manual_OK    := GVL_HeartBeat.HB_Manual_OK,
-    HB_Remote_OK    := GVL_HeartBeat.HB_Remote_OK
+    HB_Remote_OK    := GVL_HeartBeat.HB_Remote_OK,
+	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK
 );
 
 
@@ -1781,6 +1811,7 @@ fbOutputProcessing(
 //HeartBeat generator
 fbHBGen_Manual();
 fbHBGen_Remote();
+fbHBGen_Auto();
 
 IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
 
@@ -1971,6 +2002,58 @@ config_outgroups();
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>47b983a9-d53f-49e6-bcee-eb4ac70f4850</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="FB_HeartBeat" pouType="functionBlock">
+                <interface>
+                  <inputVars>
+                    <variable name="xSignal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <outputVars>
+                    <variable name="xOk">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </outputVars>
+                  <localVars>
+                    <variable name="tonTimeout">
+                      <type>
+                        <derived name="TON" />
+                      </type>
+                    </variable>
+                    <variable name="xPrevSignal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xPulse">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">xPulse := (xSignal &lt;&gt; xPrevSignal);
+xPrevSignal := xSignal;
+// Om ingen ny puls kommer, låt timern gå 
+tonTimeout(IN := NOT xPulse, PT := T#500MS);
+xOk := NOT tonTimeout.Q;
+</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>2af87149-06e6-47ae-aa30-3f298237bbf7</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -2233,6 +2316,11 @@ GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="HB_Auto_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </inputVars>
                 </interface>
                 <body>
@@ -2298,6 +2386,11 @@ GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
                       </type>
                     </variable>
                     <variable name="HB_Remote_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Auto_OK">
                       <type>
                         <BOOL />
                       </type>
@@ -2434,58 +2527,6 @@ END_IF;</xhtml>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>af8e6384-d04a-4e06-ab90-4153a4a3f710</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="FB_HeartBeat" pouType="functionBlock">
-                <interface>
-                  <inputVars>
-                    <variable name="xSignal">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                  </inputVars>
-                  <outputVars>
-                    <variable name="xOk">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                  </outputVars>
-                  <localVars>
-                    <variable name="tonTimeout">
-                      <type>
-                        <derived name="TON" />
-                      </type>
-                    </variable>
-                    <variable name="xPrevSignal">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xPulse">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                  </localVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">xPulse := (xSignal &lt;&gt; xPrevSignal);
-xPrevSignal := xSignal;
-// Om ingen ny puls kommer, låt timern gå 
-tonTimeout(IN := NOT xPulse, PT := T#500MS);
-xOk := NOT tonTimeout.Q;
-</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>2af87149-06e6-47ae-aa30-3f298237bbf7</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -3695,9 +3736,31 @@ xOk := NOT tonTimeout.Q;
     </configurations>
   </instances>
   <addData>
+    <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
+      <Libraries>
+        <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 3.5.11.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 3.5.10.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 3.5.11.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 3.5.11.20 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 3.5.11.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 3.5.11.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 3.5.11.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 3.5.11.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 3.5.10.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 3.5.10.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 3.5.11.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#system_visuinputs" Namespace="visuinputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="visuinputs, 3.5.10.0 (system)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>c2bac552-9807-4914-8bf7-a2144fae23d0</ObjectId>
+          </data>
+        </addData>
+      </Libraries>
+    </data>
     <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
       <ProjectStructure>
         <Object Name="CR710S" ObjectId="8a4045b1-25d3-40ed-a775-5d66b77f864d" />
+        <Object Name="Library Manager" ObjectId="c2bac552-9807-4914-8bf7-a2144fae23d0" />
         <Object Name="SafetyPLC" ObjectId="74f8a2c6-887a-412a-b40b-5e4f58755393">
           <Object Name="Communication" ObjectId="8eae2e73-2e8d-4ac9-b1fb-3499e322d2ff">
             <Object Name="CAN" ObjectId="cd6dba6a-8f1c-4690-a8c5-d085ec03d8a2" />
@@ -3743,6 +3806,8 @@ xOk := NOT tonTimeout.Q;
             </Object>
             <Object Name="EControlMode" ObjectId="b0f5250c-ab0a-4ee0-8ea3-eb68a42dfe8b" />
             <Object Name="ETransitionState" ObjectId="71500b0c-0575-40e0-91ef-6cd2952ca44b" />
+            <Object Name="GVL_HeartBeat" ObjectId="1ba4fcd4-7340-440d-ac0f-da43218d56a3" />
+            <Object Name="FB_HeartBeat" ObjectId="2af87149-06e6-47ae-aa30-3f298237bbf7" />
             <Object Name="ControlUnit" ObjectId="6adbd4bb-a0f3-4a74-b1dc-b729825b6315" />
             <Object Name="InputProcessing" ObjectId="4f273eba-3353-4884-b4b5-9069660833e2" />
             <Object Name="OutputProcessing" ObjectId="68d01b2d-e626-4b9c-a105-7e021ee89613" />
@@ -3750,8 +3815,6 @@ xOk := NOT tonTimeout.Q;
             <Object Name="FB_HeartBeatGenerator" ObjectId="af8e6384-d04a-4e06-ab90-4153a4a3f710" />
             <Object Name="GVL_IO" ObjectId="87c52e7c-9b3e-4847-bbff-8652888fb5e7" />
             <Object Name="GVL_State" ObjectId="5c4a4848-76ab-49ed-92a5-267a71e47b4e" />
-            <Object Name="FB_HeartBeat" ObjectId="2af87149-06e6-47ae-aa30-3f298237bbf7" />
-            <Object Name="GVL_HeartBeat" ObjectId="1ba4fcd4-7340-440d-ac0f-da43218d56a3" />
           </Object>
         </Object>
         <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
