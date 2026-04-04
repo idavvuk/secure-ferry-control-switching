@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-05T01:38:49.9887101" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-05T01:38:38.2278874" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-05T01:46:31.2772096" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-05T01:46:12.250711" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1751,42 +1751,38 @@ fbInputProcessing(
 	xHB_Manual			:= IN0103.VAR_OUT.xValueDigital 
 );
 
-GVL_HeartBeat.HB_Manual_Signal := fbInputProcessing.HB_Manual_Signal;
-GVL_HeartBeat.HB_Remote_Signal := fbInputProcessing.HB_Remote_Signal;
-
 fbHB_Manual(xSignal := GVL_HeartBeat.HB_Manual_Signal); 
 fbHB_Remote(xSignal := GVL_HeartBeat.HB_Remote_Signal); 
 
 //Heartbeat generator
 fbHBGen_Manual(); 
 fbHBGen_Remote(); 
-							//Put your Application program here 
 
 fbControlUnit(
-    ReqManual   := GVL_IO.ReqManual,
-    ReqRemote   := GVL_IO.ReqRemote,
-    AckManual   := GVL_IO.AckManual,
-    AckRemote   := GVL_IO.AckRemote,
-    RelManual   := GVL_IO.RelManual,
-    RelRemote   := GVL_IO.RelRemote,
-	HB_Manual_OK := GVL_HeartBeat.HB_Manual_OK,
-	HB_Remote_OK := GVL_HeartBeat.HB_Remote_OK
+    ReqManual  		:= GVL_IO.ReqManual,
+	AckManual   	:= GVL_IO.AckManual,
+	RelManual   	:= GVL_IO.RelManual,
+    ReqRemote   	:= GVL_IO.ReqRemote,
+    AckRemote   	:= GVL_IO.AckRemote,
+    RelRemote   	:= GVL_IO.RelRemote,
+	HB_Manual_OK 	:= GVL_HeartBeat.HB_Manual_OK,
+	HB_Remote_OK 	:= GVL_HeartBeat.HB_Remote_OK
 );
 
 fbIntegrityCheck(
-    ReqManual        := fbInputProcessing.ReqManual,
-    ReqRemote        := fbInputProcessing.ReqRemote,
-    AckManual        := fbInputProcessing.AckManual,
-    AckRemote        := fbInputProcessing.AckRemote,
-    RelManual        := fbInputProcessing.RelManual,
-    RelRemote        := fbInputProcessing.RelRemote,
-    HB_Manual_Signal := fbInputProcessing.HB_Manual_Signal,
-    HB_Remote_Signal := fbInputProcessing.HB_Remote_Signal
+    ReqManual        := GVL_IO.ReqManual,
+    ReqRemote        := GVL_IO.ReqRemote,
+    AckManual        := GVL_IO.AckManual,
+    AckRemote        := GVL_IO.AckRemote,
+    RelManual        := GVL_IO.RelManual,
+    RelRemote        := GVL_IO.RelRemote,
+    HB_Manual_Signal := GVL_HeartBeat.HB_Manual_Signal,
+    HB_Remote_Signal := GVL_HeartBeat.HB_Remote_Signal
 );
 
 fbOutputProcessing(
-    ReqManual       := fbInputProcessing.ReqManual,
-    ReqRemote       := fbInputProcessing.ReqRemote,
+    ReqManual       := GVL_IO.ReqManual,
+    ReqRemote       := GVL_IO.ReqRemote,
     GrantedManual   := fbControlUnit.GrantedManual,
     GrantedRemote   := fbControlUnit.GrantedRemote,
 	Released 		:= fbControlUnit.Released,
@@ -2377,6 +2373,9 @@ GVL_IO.RelManual := xRelManual;
 GVL_IO.ReqRemote := xReqRemote; 
 GVL_IO.Ackremote := xAckRemote; 
 GVL_IO.RelRemote := xRelRemote; 
+
+GVL_HeartBeat.HB_Manual_Signal := xHB_Manual; 
+GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
 
 </xhtml>
                   </ST>
