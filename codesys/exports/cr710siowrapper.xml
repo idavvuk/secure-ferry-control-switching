@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-01T12:34:28.3093203" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-01T12:34:11.5716937" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-05T01:38:49.9887101" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-05T01:38:38.2278874" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -156,20 +156,14 @@
                     </variable>
                   </outputVars>
                   <localVars>
-                    <variable name="fbHB_Manual_Mon">
-                      <type>
-                        <derived name="FB_HeartBeat" />
-                      </type>
-                    </variable>
-                    <variable name="fbHB_Remote_Mon">
-                      <type>
-                        <derived name="FB_HeartBeat" />
-                      </type>
-                    </variable>
                     <variable name="HB_Manual_Fail">
                       <type>
                         <BOOL />
                       </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">fbHB_Manual_Mon : FB_HeartBeat; //Ger error om man har dessa här då FB_HeartBeat inte finns i Safety
+fbHB_Remote_Mon : FB_HeartBeat; //Blir problem om man sätter HeartBeat i Safety pga TON, ska försöka hitta en lösning</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="HB_Remote_Fail">
                       <type>
@@ -190,7 +184,7 @@ END_IF
 
 
 IF EmergencyShutdown THEN 
-	RETURN
+	RETURN;
 END_IF</xhtml>
                   </ST>
                 </body>
@@ -1459,6 +1453,9 @@ END_IF</xhtml>
               <type>
                 <BOOL />
               </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Request</xhtml>
+              </documentation>
             </variable>
             <variable name="ReqRemote">
               <type>
@@ -1469,6 +1466,9 @@ END_IF</xhtml>
               <type>
                 <BOOL />
               </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Acknowledge</xhtml>
+              </documentation>
             </variable>
             <variable name="AckRemote">
               <type>
@@ -1479,71 +1479,11 @@ END_IF</xhtml>
               <type>
                 <BOOL />
               </type>
-            </variable>
-            <variable name="RelRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_RequestManual">
-              <type>
-                <BOOL />
-              </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Outputs / lampor</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Release</xhtml>
               </documentation>
             </variable>
-            <variable name="Lamp_RequestRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_GrantedManual">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_GrantedRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_Pending">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_ActiveManual">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_ActiveRemote">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_Released">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_PendingReady">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_Remote_No_HeartBeat">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_Manual_No_HeartBeat">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
-            <variable name="Lamp_FailSafe">
+            <variable name="RelRemote">
               <type>
                 <BOOL />
               </type>
@@ -1565,7 +1505,7 @@ END_IF</xhtml>
                 <derived name="EControlMode" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Vem har kontroll</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Currently active station</xhtml>
               </documentation>
             </variable>
             <variable name="Pending">
@@ -1573,7 +1513,7 @@ END_IF</xhtml>
                 <derived name="EPendingMode" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Vem vill ta över</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Station wanting to take over</xhtml>
               </documentation>
             </variable>
             <variable name="State">
@@ -1581,18 +1521,16 @@ END_IF</xhtml>
                 <derived name="ETransitionState" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Stable / PendingAck</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Stable / Pending_Ack</xhtml>
               </documentation>
-            </variable>
-            <variable name="FailSafe">
-              <type>
-                <BOOL />
-              </type>
             </variable>
             <variable name="GrantedManual">
               <type>
                 <BOOL />
               </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">FailSafe      : BOOL;</xhtml>
+              </documentation>
             </variable>
             <variable name="GrantedRemote">
               <type>
@@ -1637,15 +1575,9 @@ END_IF</xhtml>
                   <data name="http://www.3s-software.com/plcopenxml/enumvaluedocumentation" handleUnknown="implementation">
                     <EnumValueDocumentation>
                       <EnumValue>
-                        <Name>MANUAL</Name>
+                        <Name>INIT</Name>
                         <Documentation>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">prio 1</xhtml>
-                        </Documentation>
-                      </EnumValue>
-                      <EnumValue>
-                        <Name>REMOTE</Name>
-                        <Documentation>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">prio 2</xhtml>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">Initial state when starting ferry</xhtml>
                         </Documentation>
                       </EnumValue>
                     </EnumValueDocumentation>
@@ -1678,13 +1610,13 @@ END_IF</xhtml>
                       <EnumValue>
                         <Name>STABLE</Name>
                         <Documentation>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">No transition</xhtml>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">No switch in progress</xhtml>
                         </Documentation>
                       </EnumValue>
                       <EnumValue>
                         <Name>PENDING_ACK</Name>
                         <Documentation>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">Transition in progress, waiting for acknowledgement</xhtml>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">Switch in progress, waiting for acknowledgement</xhtml>
                         </Documentation>
                       </EnumValue>
                     </EnumValueDocumentation>
@@ -1700,7 +1632,7 @@ END_IF</xhtml>
                   </data>
                 </addData>
                 <documentation>
-                  <xhtml xmlns="http://www.w3.org/1999/xhtml"> Where the system is in the transition process</xhtml>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml"> Where the system is in the switch process</xhtml>
                 </documentation>
               </dataType>
             </data>
@@ -1799,6 +1731,11 @@ END_IF</xhtml>
                         <derived name="FB_HeartBeat" />
                       </type>
                     </variable>
+                    <variable name="RelRemote">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
                   </localVars>
                 </interface>
                 <body>
@@ -1807,7 +1744,12 @@ END_IF</xhtml>
 
 IOWrapper.READ_INPUTS(); 	//Call IOWrapper Main Program and Read Data from Inputs   
 
-fbInputProcessing();
+fbInputProcessing(
+	xReqManual 			:= IN0100.VAR_OUT.xValueDigital,
+	xAckManual 			:= IN0101.VAR_OUT.xValueDigital, 
+	xRelManual 			:= IN0102.VAR_OUT.xValueDigital, 
+	xHB_Manual			:= IN0103.VAR_OUT.xValueDigital 
+);
 
 GVL_HeartBeat.HB_Manual_Signal := fbInputProcessing.HB_Manual_Signal;
 GVL_HeartBeat.HB_Remote_Signal := fbInputProcessing.HB_Remote_Signal;
@@ -1821,12 +1763,12 @@ fbHBGen_Remote();
 							//Put your Application program here 
 
 fbControlUnit(
-    ReqManual   := fbInputProcessing.ReqManual,
-    ReqRemote   := fbInputProcessing.ReqRemote,
-    AckManual   := fbInputProcessing.AckManual,
-    AckRemote   := fbInputProcessing.AckRemote,
-    RelManual   := fbInputProcessing.RelManual,
-    RelRemote   := fbInputProcessing.RelRemote,
+    ReqManual   := GVL_IO.ReqManual,
+    ReqRemote   := GVL_IO.ReqRemote,
+    AckManual   := GVL_IO.AckManual,
+    AckRemote   := GVL_IO.AckRemote,
+    RelManual   := GVL_IO.RelManual,
+    RelRemote   := GVL_IO.RelRemote,
 	HB_Manual_OK := GVL_HeartBeat.HB_Manual_OK,
 	HB_Remote_OK := GVL_HeartBeat.HB_Remote_OK
 );
@@ -1900,7 +1842,7 @@ IN0502.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
 IN0503.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
 
 (* Multifuntional Inputs *) 
-// MANUAL STATION INPUTS 			
+// MANUAL STATION INPUTS 	
 IN0100.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
 IN0101.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
 IN0102.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
@@ -1998,7 +1940,7 @@ OUTGROUP1.CONFIG.SET_DIAG_LVL_PROT		(0, 12000, 100, eDIAG_PROT_MODE.DIAG_PROT);
                     <body>
                       <ST>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml">(* Output Mode Configuration *) 
-(* Group 0 *)
+(* Group 0 *) //ÄNDRAT HÄR?? Osäker om dessa stämmer? 
 OUT0000.CONFIG.OUT_DIGITAL_CSO				(FILTER_OUTPUT.UNCHANGED);
 OUT0001.CONFIG.OUT_DIGITAL_CSO				(FILTER_OUTPUT.UNCHANGED);
 OUT0002.CONFIG.OUT_DIGITAL_CSO				(FILTER_OUTPUT.UNCHANGED);
@@ -2007,6 +1949,7 @@ OUT0004.CONFIG.OUT_DIGITAL_CSO				(FILTER_OUTPUT.UNCHANGED);
 OUT0005.CONFIG.OUT_DIGITAL_CSO				(FILTER_OUTPUT.UNCHANGED);
 OUT0006.CONFIG.OUT_DIGITAL_CSO				(FILTER_OUTPUT.UNCHANGED);
 OUT0007.CONFIG.OUT_DIGITAL_CSO				(FILTER_OUTPUT.UNCHANGED);
+
 (* Group 1 *)         				    		
 OUT0100.CONFIG.MONITOR			(FILTER_OUTPUT.UNCHANGED);
 OUT0101.CONFIG.MONITOR			(FILTER_OUTPUT.UNCHANGED);
@@ -2016,6 +1959,7 @@ OUT0104.CONFIG.MONITOR			(FILTER_OUTPUT.UNCHANGED);
 OUT0105.CONFIG.MONITOR			(FILTER_OUTPUT.UNCHANGED);
 OUT0106.CONFIG.MONITOR			(FILTER_OUTPUT.UNCHANGED);
 OUT0107.CONFIG.MONITOR			(FILTER_OUTPUT.UNCHANGED);
+
 (* Output SensorSupply and Analogue *)      				
 OUT3000.CONFIG.MONITOR			(FILTER_OUTPUT.UNCHANGED);
 OUT3001.CONFIG.MONITOR			(FILTER_OUTPUT.UNCHANGED);	
@@ -2166,6 +2110,9 @@ xOk := NOT tonTimeout.Q;
                       <type>
                         <REAL />
                       </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">Still needed? </xhtml>
+                      </documentation>
                     </variable>
                     <variable name="MaxVelocity">
                       <type>
@@ -2378,42 +2325,42 @@ GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
               <pou name="InputProcessing" pouType="functionBlock">
                 <interface>
                   <inputVars>
-                    <variable name="ReqManual">
+                    <variable name="xReqRemote">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="ReqRemote">
+                    <variable name="xAckRemote">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="AckManual">
+                    <variable name="xRelRemote">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="AckRemote">
+                    <variable name="xHB_Remote">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="RelManual">
+                    <variable name="xReqManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="RelRemote">
+                    <variable name="xAckManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="HB_Manual_Signal">
+                    <variable name="xRelManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="HB_Remote_Signal">
+                    <variable name="xHB_Manual">
                       <type>
                         <BOOL />
                       </type>
@@ -2422,18 +2369,15 @@ GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// IN0100 group signals -- Manual
-ReqManual 			:= IN0100.VAR_OUT.xValueDigital;
-AckManual 			:= IN0101.VAR_OUT.xValueDigital; 
-RelManual 			:= IN0102.VAR_OUT.xValueDigital; 
-HB_Manual_Signal	:= IN0103.VAR_OUT.xValueDigital; 
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">
+GVL_IO.ReqManual := xReqManual; 
+GVL_IO.AckManual := xAckManual; 
+GVL_IO.RelManual := xRelManual; 
 
+GVL_IO.ReqRemote := xReqRemote; 
+GVL_IO.Ackremote := xAckRemote; 
+GVL_IO.RelRemote := xRelRemote; 
 
-//IN0600 group signals -- Remote
-ReqRemote 			:= IN0600.VAR_OUT.xValueDigital; 
-AckRemote 			:= IN0601.VAR_OUT.xValueDigital; 
-RelRemote 			:= IN0602.VAR_OUT.xValueDigital; 
-HB_Remote_Signal	:= IN0603.VAR_OUT.xValueDigital;
 </xhtml>
                   </ST>
                 </body>
@@ -2740,10 +2684,10 @@ END_IF;</xhtml>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF (ReqManual AND ReqRemote) OR
-   (ReqManual AND RelManual) OR
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF (ReqManual AND ReqRemote) OR //two stations want control
+   (ReqManual AND RelManual) OR //a station requesting and releasing at the same time
    (ReqRemote AND RelRemote) THEN
-   	Valid        := FALSE;
+   	Valid        := FALSE; 
     ReqManual_Out := FALSE;
     ReqRemote_Out := FALSE;
     AckManual_Out := FALSE;
