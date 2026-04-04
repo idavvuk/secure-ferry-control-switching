@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-05T01:46:31.2772096" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-05T01:46:12.250711" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-05T01:50:55.4790483" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-05T01:50:42.5769051" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1844,11 +1844,11 @@ IN0101.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
 IN0102.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
 IN0103.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_1);   
          		
-// REMOTE STATION INPUTS		
-IN0600.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
-IN0601.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
-IN0602.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_5);
-IN0603.CONFIG.IN_DIGITAL_CSI		(FILTER_INPUT.FILTER_1);
+		
+IN0600.CONFIG.MONITOR		(FILTER_INPUT.FILTER_5);
+IN0601.CONFIG.MONITOR		(FILTER_INPUT.FILTER_5);
+IN0602.CONFIG.MONITOR		(FILTER_INPUT.FILTER_5);
+IN0603.CONFIG.MONITOR		(FILTER_INPUT.FILTER_1);
 
 (* Resistopr Inputs *)      	
 IN0400.CONFIG.MONITOR		(FILTER_INPUT.UNCHANGED);
