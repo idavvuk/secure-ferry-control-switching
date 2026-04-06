@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-06T18:01:47.8265477" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-06T18:01:22.2239316" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-06T19:36:49.9949542" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-06T19:34:16.4100307" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -85,6 +85,11 @@
                 <BOOL />
               </type>
             </variable>
+            <variable name="HB_Auto_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                 <Attributes>
@@ -122,7 +127,8 @@
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">fbMonitoringChannel(
 	HB_Manual_OK := EVL.HB_Manual_OK, 
-	HB_Remote_OK := EVL.HB_Remote_OK
+	HB_Remote_OK := EVL.HB_Remote_OK,
+	HB_Auto_OK	 := EVL.HB_Auto_OK
 );</xhtml>
                   </ST>
                 </body>
@@ -143,6 +149,11 @@
                       </type>
                     </variable>
                     <variable name="HB_Remote_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Auto_OK">
                       <type>
                         <BOOL />
                       </type>
@@ -170,6 +181,11 @@ fbHB_Remote_Mon : FB_HeartBeat; //Blir problem om man sätter HeartBeat i Safety
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="HB_Auto_Fail">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </localVars>
                 </interface>
                 <body>
@@ -177,8 +193,9 @@ fbHB_Remote_Mon : FB_HeartBeat; //Blir problem om man sätter HeartBeat i Safety
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
 HB_Manual_Fail := NOT HB_Manual_OK; 
 HB_Remote_Fail := NOT HB_Remote_OK; 
+HB_Auto_Fail   := NOT HB_Auto_OK;
 
-IF HB_Manual_Fail AND HB_Remote_Fail THEN 
+IF HB_Manual_Fail AND HB_Remote_Fail AND HB_Auto_Fail THEN 
 	EmergencyShutdown := TRUE; 
 END_IF
 
@@ -1759,12 +1776,22 @@ END_IF</xhtml>
                         <derived name="FB_HeartBeatGenerator" />
                       </type>
                     </variable>
+                    <variable name="fbHBGen_Auto">
+                      <type>
+                        <derived name="FB_HeartBeatGenerator" />
+                      </type>
+                    </variable>
                     <variable name="fbHB_Manual">
                       <type>
                         <derived name="FB_HeartBeat" />
                       </type>
                     </variable>
                     <variable name="fbHB_Remote">
+                      <type>
+                        <derived name="FB_HeartBeat" />
+                      </type>
+                    </variable>
+                    <variable name="fbHB_Auto">
                       <type>
                         <derived name="FB_HeartBeat" />
                       </type>
@@ -1791,10 +1818,12 @@ fbInputProcessing(
 
 fbHB_Manual(xSignal := GVL_HeartBeat.HB_Manual_Signal); 
 fbHB_Remote(xSignal := GVL_HeartBeat.HB_Remote_Signal); 
+fbHB_Auto(xSignal 	:= GVL_HeartBeat.HB_Auto_Signal);
 
 //Heartbeat generator
 fbHBGen_Manual(); 
 fbHBGen_Remote(); 
+fbHBGen_Auto();
 
 fbControlUnit(
     ReqManual  		:= GVL_IO.ReqManual,
@@ -1803,8 +1832,12 @@ fbControlUnit(
     ReqRemote   	:= GVL_IO.ReqRemote,
     AckRemote   	:= GVL_IO.AckRemote,
     RelRemote   	:= GVL_IO.RelRemote,
+	ReqAuto			:= GVL_IO.ReqAuto,
+	AckAuto			:= GVL_IO.AckAuto,
+	RelAuto			:= GVL_IO.RelAuto,
 	HB_Manual_OK 	:= GVL_HeartBeat.HB_Manual_OK,
-	HB_Remote_OK 	:= GVL_HeartBeat.HB_Remote_OK
+	HB_Remote_OK 	:= GVL_HeartBeat.HB_Remote_OK,
+	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK
 );
 
 fbIntegrityCheck(
@@ -2358,16 +2391,20 @@ CASE State OF
 			tAckTimer (IN := FALSE); // Reset timer
 		ELSE 
 			Released := (Active = EControlMode.MANUAL AND RelManual) OR 
-			(Active = EControlMode.REMOTE AND RelRemote); 
+			(Active = EControlMode.REMOTE AND RelRemote) OR
+			(Active = EControlMode.AUTO AND RelAuto); 
 			
 			PendingReady := (Pending = EPendingMode.PENDING_MANUAL AND AckManual) OR 
-			(Pending = EPendingMode.PENDING_REMOTE AND AckRemote); 
+			(Pending = EPendingMode.PENDING_REMOTE AND AckRemote) OR
+			(PEnding = EPendingMode.PENDING_AUTO AND AckAuto); 
 			
 			IF Released AND PendingReady THEN 
 				IF Pending = EPendingMode.PENDING_MANUAL THEN 
 					Active := EControlMode.MANUAL; 
-				ELSIF PEnding = EPendingMode.PENDING_REMOTE THEN 
+				ELSIF Pending = EPendingMode.PENDING_REMOTE THEN 
 					Active := EControlMode.REMOTE; 
+				ELSIF Pending := EPendingMode.PENDING_AUTO THEN
+					Active := EControlMode.AUTO;
 				END_IF
 				Pending := EPendingMode.NONE; 
 				State := ETransitionState.STABLE; 
@@ -2375,6 +2412,7 @@ CASE State OF
 				Released := FALSE; 
 				ReqRemote := FALSE; 
 				ReqManual := FALSE; 
+				ReqAuto	  := FALSE;
 			END_IF
 		END_IF
 		
@@ -2384,6 +2422,7 @@ END_CASE
 //Updated grant signals based on the current pending mode 
 GrantedManual := (Pending = EPendingMode.PENDING_MANUAL);
 GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
+GrantedAuto   := (Pending = EPendingMode.PENDING_AUTO);
 		
 </xhtml>
                   </ST>
@@ -2439,6 +2478,26 @@ GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="xReqAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xAckAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xRelAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xHB_Auto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </inputVars>
                 </interface>
                 <body>
@@ -2452,9 +2511,13 @@ GVL_IO.ReqRemote := xReqRemote;
 GVL_IO.Ackremote := xAckRemote; 
 GVL_IO.RelRemote := xRelRemote; 
 
+GVL_IO.ReqAuto	 := xReqAuto;
+GVL_IO.AckAuto	 := xAckAuto;
+GVL_IO.RelAuto	 := xRelAuto;
+
 GVL_HeartBeat.HB_Manual_Signal := xHB_Manual; 
 GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
-
+GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
 </xhtml>
                   </ST>
                 </body>
@@ -2479,12 +2542,22 @@ GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="ReqAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="GrantedManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
                     <variable name="GrantedRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="GrantedAuto">
                       <type>
                         <BOOL />
                       </type>
@@ -2519,6 +2592,11 @@ GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="HB_Auto_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </inputVars>
                   <outputVars>
                     <variable name="OUT_GrantedManual">
@@ -2531,12 +2609,22 @@ GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="OUT_GrantedAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="OUT_ActiveManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
                     <variable name="OUT_ActiveRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="OUT_ActiveAuto">
                       <type>
                         <BOOL />
                       </type>
@@ -2572,6 +2660,14 @@ GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
                         <xhtml xmlns="http://www.w3.org/1999/xhtml">loss of heartbeat</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="OUT_NoHB_Auto">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">loss of heartbeat</xhtml>
+                      </documentation>
+                    </variable>
                     <variable name="OUT_FailSafe">
                       <type>
                         <BOOL />
@@ -2584,13 +2680,16 @@ GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">// Lamp outputs reflecting current system state
 OUT_GrantedManual := GrantedManual; 
 OUT_GrantedRemote := GrantedRemote; 
+OUT_GrantedAuto	  := GrantedAuto;
 OUT_ActiveManual  := (Active = EControlMode.MANUAL); 
 OUT_ActiveRemote  := (Active = EControlMode.REMOTE);
+OUT_ActiveAuto    := (Active = EControlMode.AUTO);
 OUT_Pending		  := (State = ETransitionState.PENDING_ACK); 
 OUT_PendingReady  := PendingReady; 
 OUT_Released	  := Released; 
 OUT_NoHB_Manual   := NOT HB_Manual_OK; 
 OUT_NoHB_Remote   := NOT HB_Remote_OK; 
+OUT_NoHB_Auto	  := NOT HB_Auto_OK;
 OUT_FailSafe	  :=(Active = EControlMode.FAILSAFE);
 
 (*
@@ -2677,12 +2776,22 @@ END_IF;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="ReqAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="AckManual">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
                     <variable name="AckRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckAuto">
                       <type>
                         <BOOL />
                       </type>
@@ -2697,12 +2806,22 @@ END_IF;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="RelAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="HB_Manual_Signal">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
                     <variable name="HB_Remote_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Auto_Signal">
                       <type>
                         <BOOL />
                       </type>
@@ -2727,12 +2846,22 @@ END_IF;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="ReqAuto_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="AckManual_Out">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
                     <variable name="AckRemote_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckAuto_Out">
                       <type>
                         <BOOL />
                       </type>
@@ -2747,12 +2876,22 @@ END_IF;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="RelAuto_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="HB_Manual_Out">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
                     <variable name="HB_Remote_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Auto_Out">
                       <type>
                         <BOOL />
                       </type>
