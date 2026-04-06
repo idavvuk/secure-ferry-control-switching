@@ -1,7 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
+<<<<<<< Updated upstream
   <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-05T01:50:55.4790483" />
   <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-05T01:50:42.5769051" organization="ifm electronic">
+=======
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-06T20:05:24.6233068" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-06T20:05:02.7034427" organization="ifm electronic">
+>>>>>>> Stashed changes
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1772,25 +1777,32 @@ fbControlUnit(
 fbIntegrityCheck(
     ReqManual        := GVL_IO.ReqManual,
     ReqRemote        := GVL_IO.ReqRemote,
+	ReqAuto			 := GVL_IO.ReqAuto,
     AckManual        := GVL_IO.AckManual,
     AckRemote        := GVL_IO.AckRemote,
+	AckAuto			 := GVL_IO.AckAuto,
     RelManual        := GVL_IO.RelManual,
     RelRemote        := GVL_IO.RelRemote,
+	RelAuto			 := GVL_IO.RelAuto,
     HB_Manual_Signal := GVL_HeartBeat.HB_Manual_Signal,
-    HB_Remote_Signal := GVL_HeartBeat.HB_Remote_Signal
+    HB_Remote_Signal := GVL_HeartBeat.HB_Remote_Signal,
+	HB_Auto_Signal	 := GVL_HeartBeat.HB_Auto_Signal
 );
 
 fbOutputProcessing(
     ReqManual       := GVL_IO.ReqManual,
     ReqRemote       := GVL_IO.ReqRemote,
+	ReqAuto	        := GVL_IO.ReqAuto,
     GrantedManual   := fbControlUnit.GrantedManual,
     GrantedRemote   := fbControlUnit.GrantedRemote,
+	GrantedAuto	    := fbControlUnit.GrantedAuto,
 	Released 		:= fbControlUnit.Released,
 	PendingReady 	:= fbControlUnit.PendingReady,
     Active          := fbControlUnit.Active,
     State           := fbControlUnit.State,
     HB_Manual_OK    := GVL_HeartBeat.HB_Manual_OK,
-    HB_Remote_OK    := GVL_HeartBeat.HB_Remote_OK
+    HB_Remote_OK    := GVL_HeartBeat.HB_Remote_OK,
+	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK
 );
 
 fbDecisionLogger( 
@@ -1805,6 +1817,9 @@ OUT0002.VAR_IN.uiValue := SEL(fbOutputProcessing.Out_ActiveManual, 0, 2500);
 OUT0003.VAR_IN.uiValue := SEL(fbOutputProcessing.Out_ActiveRemote, 0, 2500);
 OUT0004.VAR_IN.uiValue := SEL(fbOutputProcessing.Out_Pending, 0, 2500);
 OUT0005.VAR_IN.uiValue := SEL(fbOutputProcessing.Out_FailSafe, 0, 2500);
+
+OUT0006.VAR_IN.uiValue := SEL(fbOutputProcessing.Out_GrantedAuto, 0, 2500);
+OUT0007.VAR_IN.uiValue := SEL(fbOutputProcessing.Out_ActiveAuto, 0, 2500);
 
 IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
 
@@ -2684,29 +2699,40 @@ END_IF;</xhtml>
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">IF (ReqManual AND ReqRemote) OR //two stations want control
+   (ReqManual AND ReqAuto) 	 OR	   
+   (ReqRemote AND ReqAuto)	 OR
    (ReqManual AND RelManual) OR //a station requesting and releasing at the same time
-   (ReqRemote AND RelRemote) THEN
+   (ReqRemote AND RelRemote) OR
+   (ReqAuto AND RelAuto) THEN
    	Valid        := FALSE; 
     ReqManual_Out := FALSE;
     ReqRemote_Out := FALSE;
+	ReqAuto_Out	  := FALSE;
     AckManual_Out := FALSE;
     AckRemote_Out := FALSE;
+	AckAuto_Out	  := FALSE;
     RelManual_Out := FALSE;
     RelRemote_Out := FALSE;
+	RelAuto_Out	  := FALSE;
     HB_Manual_Out := HB_Manual_Signal;
 	HB_Remote_Out := HB_Remote_Signal;
+	HB_Auto_Out	  := HB_Auto_Signal;
     RETURN;
 END_IF
 
 Valid         := TRUE;
 ReqManual_Out := ReqManual;
 ReqRemote_Out := ReqRemote;
+ReqAuto_Out	  := ReqAuto;
 AckManual_Out := AckManual;
 AckRemote_Out := AckRemote;
+AckAuto_Out	  := AckAuto;
 RelManual_Out := RelManual;
 RelRemote_Out := RelRemote;
+RelAuto_Out   := RelAuto;
 HB_Manual_Out := HB_Manual_Signal;
-HB_Remote_Out := HB_Remote_Signal;</xhtml>
+HB_Remote_Out := HB_Remote_Signal;
+HB_Auto_Out	  := HB_Auto_Signal;</xhtml>
                   </ST>
                 </body>
                 <addData>
