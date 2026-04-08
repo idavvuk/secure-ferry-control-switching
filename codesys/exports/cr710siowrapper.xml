@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-08T11:29:23.7671258" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-08T11:28:55.8067194" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-08T13:22:16.227361" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-08T13:21:47.7288383" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2286,7 +2286,7 @@ xOk := NOT tonTimeout.Q;
                         <derived name="TON" />
                       </type>
                     </variable>
-                    <variable name="xReqRemote">
+                    <variable name="xReqRemoteOld">
                       <type>
                         <BOOL />
                       </type>
@@ -2294,7 +2294,7 @@ xOk := NOT tonTimeout.Q;
                         <simpleValue value="FALSE" />
                       </initialValue>
                     </variable>
-                    <variable name="xReqManual">
+                    <variable name="xReqManualOld">
                       <type>
                         <BOOL />
                       </type>
@@ -2302,7 +2302,7 @@ xOk := NOT tonTimeout.Q;
                         <simpleValue value="FALSE" />
                       </initialValue>
                     </variable>
-                    <variable name="xReqAuto">
+                    <variable name="xReqAutoOld">
                       <type>
                         <BOOL />
                       </type>
@@ -2339,13 +2339,13 @@ xOk := NOT tonTimeout.Q;
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
-xReqRemotePulse := ReqRemote AND NOT xReqRemote; 
-xReqManualPulse := ReqManual AND NOT xReqManual; 
-xReqAuto := ReqAuto AND NOT xReqAuto; 
+xReqRemotePulse := ReqRemote AND NOT xReqRemoteOld; 
+xReqManualPulse := ReqManual AND NOT xReqManualOld; 
+xReqAutoPulse := ReqAuto AND NOT xReqAutoOld; 
 
-xReqRemote := ReqRemote; 
-xReqManual := ReqManual; 
-xReqAuto := ReqAuto; 
+xReqRemoteOld := ReqRemote; 
+xReqManualOld := ReqManual; 
+xReqAutoOld := ReqAuto; 
 
 
 
@@ -2358,27 +2358,26 @@ END_IF
 //If in FailSafe then we block everything else
 IF Active = EControlMode.FAILSAFE THEN 
 	Pending := EPendingMode.NONE; //set pending to none
-	State := ETransitionState.STABLE; //no transition active
-	RETURN; 
+	State := ETransitionState.STABLE; //no transition active 
 END_IF
 
 
 IF Active = EControlMode.REMOTE AND NOT HB_Remote_OK THEN
-	Active := SEL(HB_Manual_OK, EControlMode.FAILSAFE, EControlMode.MANUAL);  //ÄNDRA FRÅN SEL - 
+	Active := EControlMode.FAILSAFE; 
 	Pending := EPendingMode.NONE; 
 	State := ETransitionState.STABLE; 
 	RETURN; 
 END_IF 
 	
 IF Active = EControlMode.MANUAL AND NOT HB_Manual_OK THEN
-	Active := SEL(HB_Remote_OK, EControlMode.FAILSAFE, EControlMode.REMOTE); 
+	Active := EControlMode.FAILSAFE; 
 	Pending := EPendingMode.NONE; 
 	State := ETransitionState.STABLE; 
 	RETURN;
 END_IF
 
 IF Active = EControlMode.AUTO AND NOT HB_Auto_OK THEN
-	Active := SEL(HB_Manual_OK, EControlMode.FAILSAFE, EControlMode.MANUAL);
+	Active := EControlMode.FAILSAFE;
 	Pending := EPendingMode.NONE;
 	State := ETransitionState.STABLE;
 	RETURN;
@@ -2389,6 +2388,7 @@ CASE State OF
 	//Stable: No transition is currently in progress
 	ETransitionState.STABLE: 
 	Pending := EPendingMode.NONE; //No one is trying to take over
+	tAckTimer(IN := FALSE, PT := MaxAckTime);
 	
 		//Manual station requests control
 		IF xReqManualPulse AND NOT xReqRemotePulse AND NOT xReqAutoPulse AND Active &lt;&gt; EControlMode.MANUAL AND
@@ -2406,23 +2406,29 @@ CASE State OF
 				State := ETransitionState.PENDING_ACK;
 		END_IF
 		
-		IF Velocity &gt; MaxVelocity OR SteeringAngle &gt; MaxSteering THEN 
+		//IF Velocity &gt; MaxVelocity OR SteeringAngle &gt; MaxSteering THEN 
 			//not allowed
-		ELSIF xReqManualPulse AND NOT xReqRemotePulse AND Active &lt;&gt; EControlMode.MANUAL AND HB_Manual_OK THEN 
-			Pending := EPendingMode.PENDING_MANUAL; 
-			State := ETransitionState.PENDING_ACK; 
-		ELSIF xReqRemotePulse AND NOT xReqManualPulse AND Active &lt;&gt; EControlMode.REMOTE AND HB_Remote_OK THEN 
-			Pending := EPendingMode.PENDING_REMOTE; 
-			State := ETransitionState.PENDING_ACK; 
-		END_IF
+		//ELSIF xReqManualPulse AND NOT xReqRemotePulse AND Active &lt;&gt; EControlMode.MANUAL AND HB_Manual_OK THEN 
+			//Pending := EPendingMode.PENDING_MANUAL; 
+			//State := ETransitionState.PENDING_ACK; 
+		//ELSIF xReqRemotePulse AND NOT xReqManualPulse AND Active &lt;&gt; EControlMode.REMOTE AND HB_Remote_OK THEN 
+			//Pending := EPendingMode.PENDING_REMOTE; 
+			//State := ETransitionState.PENDING_ACK; 
+		//END_IF
 	
 	//Transition has been granted, waiting for acknowledgement from both control modes
 	ETransitionState.PENDING_ACK:
+		tAckTimer(IN := TRUE, PT := MaxAckTime);
 		IF (GrantedManual AND (NOT ReqManual OR NOT HB_Manual_OK)) OR
 		   (GrantedRemote AND (NOT ReqRemote OR NOT HB_Remote_OK)) OR 
 		   (GrantedAuto AND (NOT ReqAuto OR NOT HB_Auto_OK)) THEN
 			Pending := EPendingMode.NONE;
 			State := ETransitionState.STABLE;
+			tAckTimer(IN := FALSE, PT := MaxAckTime);
+		ELSIF tAckTimer.Q THEN
+			Pending := EPendingMode.NONE;
+			State := ETransitionState.STABLE;
+			tAckTimer(IN := FALSE, PT := MaxAckTime);
 		ELSE
 			Released := (Active = EControlMode.MANUAL AND RelManual) OR
 					   (Active = EControlMode.REMOTE AND RelRemote) OR
@@ -2437,54 +2443,50 @@ CASE State OF
 				IF Pending = EPendingMode.PENDING_MANUAL THEN
 					Active := EControlMode.MANUAL;
 				ELSIF Pending = EPendingMode.PENDING_REMOTE THEN
-					Pending := EPendingMode.NONE;
-					State := ETransitionState.STABLE;
-					Released := FALSE;
-					ReqRemote := FALSE;
-					ReqManual := FALSE;
-				END_IF
-			END_IF
-		END_IF
-		
-		tAckTimer (IN := TRUE, PT := MaxAckTime); 
-		
-		IF tAckTimer.Q THEN 
-			Pending := EPendingMode.NONE; 
-			State := ETransitionState.STABLE; 
-			tAckTimer (IN := FALSE); // Reset timer 
-		END_IF
-		
-		//cancel if requesting station is dropped or lost its heartbeat
-		IF (GrantedManual AND (NOT ReqManual OR NOT HB_Manual_OK)) OR 
-			(GrantedRemote AND (NOT ReqRemote OR NOT HB_Remote_OK)) THEN
-			Pending := EPendingMode.NONE; 
-			State := ETransitionState.STABLE; 
-			tAckTimer (IN := FALSE); // Reset timer
-		ELSE 
-			Released := (Active = EControlMode.MANUAL AND RelManual) OR 
-			(Active = EControlMode.REMOTE AND RelRemote) OR
-			(Active = EControlMode.AUTO AND RelAuto); 
-			
-			PendingReady := (Pending = EPendingMode.PENDING_MANUAL AND AckManual) OR 
-			(Pending = EPendingMode.PENDING_REMOTE AND AckRemote) OR
-			(PEnding = EPendingMode.PENDING_AUTO AND AckAuto); 
-			
-			IF Released AND PendingReady THEN 
-				IF Pending = EPendingMode.PENDING_MANUAL THEN 
-					Active := EControlMode.MANUAL; 
-				ELSIF Pending = EPendingMode.PENDING_REMOTE THEN 
-					Active := EControlMode.REMOTE; 
-				ELSIF Pending := EPendingMode.PENDING_AUTO THEN
+					Active := EControlMode.REMOTE;
+				ELSIF Pending = EPendingMode.PENDING_AUTO THEN
 					Active := EControlMode.AUTO;
 				END_IF
-				Pending := EPendingMode.NONE; 
-				State := ETransitionState.STABLE; 
-				tAckTimer(IN := FALSE); 
-				Released := FALSE; 
-					//ÄNDRA HÄR 
-				
+					Pending := EPendingMode.NONE;
+					State := ETransitionState.STABLE;
+					tAckTimer(IN := FALSE, PT := MaxAckTime);
+					Released := FALSE;
+					PendingReady := FALSE;
 			END_IF
 		END_IF
+		
+		
+		//cancel if requesting station is dropped or lost its heartbeat
+		//IF (GrantedManual AND (NOT ReqManual OR NOT HB_Manual_OK)) OR 
+			//(GrantedRemote AND (NOT ReqRemote OR NOT HB_Remote_OK)) THEN
+			//Pending := EPendingMode.NONE; 
+			//State := ETransitionState.STABLE; 
+			//tAckTimer (IN := FALSE); // Reset timer
+		//ELSE 
+			//Released := (Active = EControlMode.MANUAL AND RelManual) OR 
+			//(Active = EControlMode.REMOTE AND RelRemote) OR
+			//(Active = EControlMode.AUTO AND RelAuto); 
+			
+			//PendingReady := (Pending = EPendingMode.PENDING_MANUAL AND AckManual) OR 
+			//(Pending = EPendingMode.PENDING_REMOTE AND AckRemote) OR
+			//(PEnding = EPendingMode.PENDING_AUTO AND AckAuto); 
+			
+			//IF Released AND PendingReady THEN 
+				//IF Pending = EPendingMode.PENDING_MANUAL THEN 
+					//Active := EControlMode.MANUAL; 
+				//ELSIF Pending = EPendingMode.PENDING_REMOTE THEN 
+					//Active := EControlMode.REMOTE; 
+				//ELSIF Pending := EPendingMode.PENDING_AUTO THEN
+					//Active := EControlMode.AUTO;
+				//END_IF
+				//Pending := EPendingMode.NONE; 
+				//State := ETransitionState.STABLE; 
+				//tAckTimer(IN := FALSE); 
+				//Released := FALSE; 
+					//ÄNDRA HÄR 
+				
+			//END_IF
+	//END_IF
 		
 END_CASE
 
