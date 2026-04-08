@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-08T16:02:56.3789791" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-08T16:02:33.1393164" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-08T16:56:14.2212234" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-08T16:55:53.8890985" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2364,34 +2364,28 @@ IF Active = EControlMode.FAILSAFE THEN
 END_IF
 
 
-IF Active = EControlMode.REMOTE AND NOT HB_Remote_OK THEN
+IF (Active = EControlMode.REMOTE AND NOT HB_Remote_OK) OR 
+	(Active = EControlMode.MANUAL AND NOT HB_Manual_OK) OR 
+	(Active = EControlMode.AUTO AND NOT HB_Auto_OK) THEN
 	Active := EControlMode.FAILSAFE; 
 	Pending := EPendingMode.NONE; 
 	State := ETransitionState.STABLE; 
 	RETURN; 
 END_IF 
-	
-IF Active = EControlMode.MANUAL AND NOT HB_Manual_OK THEN
-	Active := EControlMode.FAILSAFE; 
-	Pending := EPendingMode.NONE; 
-	State := ETransitionState.STABLE; 
-	RETURN;
-END_IF
-
-IF Active = EControlMode.AUTO AND NOT HB_Auto_OK THEN
-	Active := EControlMode.FAILSAFE;
-	Pending := EPendingMode.NONE;
-	State := ETransitionState.STABLE;
-	RETURN;
-END_IF
-
  
 CASE State OF 
 	//Stable: No transition is currently in progress
 	ETransitionState.STABLE: 
-	Pending := EPendingMode.NONE; //No one is trying to take over
-	tAckTimer(IN := FALSE, PT := MaxAckTime);
+		Pending := EPendingMode.NONE; //No one is trying to take over
+		tAckTimer(IN := FALSE, PT := MaxAckTime);
+		
+		IF xReqManualPulse OR xReqRemotePulse OR xReqAutoPulse THEN 
+			State := ETransitionState.PRE_TAKEOVER; 
+		END_IF
 	
+	ETransitionState.PRE_TAKEOVER:	
+	
+		
 		//Manual station requests control
 		IF xReqManualPulse AND NOT xReqRemotePulse AND NOT xReqAutoPulse AND Active &lt;&gt; EControlMode.MANUAL AND
 			HB_Manual_OK THEN 
@@ -2406,6 +2400,9 @@ CASE State OF
 			HB_Auto_OK THEN
 				Pending := EPendingMode.PENDING_AUTO;
 				State := ETransitionState.PENDING_ACK;
+		ELSE
+			Pending := EPendingMode.NONE; 
+			State := ETransitionState.STABLE; 
 		END_IF
 		
 		//IF Velocity &gt; MaxVelocity OR SteeringAngle &gt; MaxSteering THEN 
@@ -2419,52 +2416,21 @@ CASE State OF
 		//END_IF
 	
 	//Transition has been granted, waiting for acknowledgement from both control modes
-	ETransitionState.PRE_TAKEOVER:
-		tAckTimer(IN := TRUE, PT := MaxAckTime);
-		IF (GrantedManual AND (NOT ReqManual OR NOT HB_Manual_OK)) OR
-		   (GrantedRemote AND (NOT ReqRemote OR NOT HB_Remote_OK)) OR 
-		   (GrantedAuto AND (NOT ReqAuto OR NOT HB_Auto_OK)) THEN
-			Pending := EPendingMode.NONE;
-			State := ETransitionState.STABLE;
-			tAckTimer(IN := FALSE, PT := MaxAckTime);
-		ELSIF tAckTimer.Q THEN
-			Pending := EPendingMode.NONE;
-			State := ETransitionState.STABLE;
-			tAckTimer(IN := FALSE, PT := MaxAckTime);
-		ELSE
-			Released := (Active = EControlMode.MANUAL AND RelManual) OR
-					   (Active = EControlMode.REMOTE AND RelRemote) OR
-					   (Active = EControlMode.AUTO AND RelAuto);
-
-			PendingReady := (Pending = EPendingMode.PENDING_MANUAL AND AckManual) OR
-						   (Pending = EPendingMode.PENDING_REMOTE AND AckRemote) OR
-							(Pending = EPendingMode.PENDING_AUTO AND AckAuto);
-
-			IF Released AND PendingReady THEN
-				// Convert EPendingMode to EControlMode
-				IF Pending = EPendingMode.PENDING_MANUAL THEN
-					Active := EControlMode.MANUAL;
-				ELSIF Pending = EPendingMode.PENDING_REMOTE THEN
-					Active := EControlMode.REMOTE;
-				ELSIF Pending = EPendingMode.PENDING_AUTO THEN
-					Active := EControlMode.AUTO;
-				END_IF
-					Pending := EPendingMode.NONE;
-					State := ETransitionState.STABLE;
-					tAckTimer(IN := FALSE, PT := MaxAckTime);
-					Released := FALSE;
-					PendingReady := FALSE;
-			END_IF
-		END_IF
-		
-		
+	ETransitionState.VALIDATE_TAKEOVER: 
+		tAckTimer(IN := TRUE, PT := MaxAckTime); 
 		//cancel if requesting station is dropped or lost its heartbeat
 		IF (GrantedManual AND (NOT ReqManual OR NOT HB_Manual_OK)) OR 
 			(GrantedRemote AND (NOT ReqRemote OR NOT HB_Remote_OK)) THEN
 			Pending := EPendingMode.NONE; 
 			State := ETransitionState.STABLE; 
 			tAckTimer (IN := FALSE); // Reset timer
-		ELSE 
+			
+		ELSIF tAckTimer.Q THEN 
+			Pending := EPendingMode.NONE; 
+			State := ETransitionState.STABLE; 
+			tAckTimer(IN := FALSE, PT := MaxAckTime); 
+			
+		ELSE
 			Released := (Active = EControlMode.MANUAL AND RelManual) OR 
 			(Active = EControlMode.REMOTE AND RelRemote) OR
 			(Active = EControlMode.AUTO AND RelAuto); 
@@ -2472,20 +2438,20 @@ CASE State OF
 			PendingReady := (Pending = EPendingMode.PENDING_MANUAL AND AckManual) OR 
 			(Pending = EPendingMode.PENDING_REMOTE AND AckRemote) OR
 			(PEnding = EPendingMode.PENDING_AUTO AND AckAuto); 
-			
+		
 			IF Released AND PendingReady THEN 
 				IF Pending = EPendingMode.PENDING_MANUAL THEN 
 					Active := EControlMode.MANUAL; 
 				ELSIF Pending = EPendingMode.PENDING_REMOTE THEN 
 					Active := EControlMode.REMOTE; 
-				ELSIF Pending := EPendingMode.PENDING_AUTO THEN
+				ELSIF Pending = EPendingMode.PENDING_AUTO THEN
 					Active := EControlMode.AUTO;
 				END_IF
 				Pending := EPendingMode.NONE; 
 				State := ETransitionState.STABLE; 
 				tAckTimer(IN := FALSE); 
 				Released := FALSE; 
-					//ÄNDRA HÄR 
+					 
 				
 			END_IF
 	END_IF
@@ -3071,429 +3037,6 @@ END_IF</xhtml>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>88b66225-4fdc-4441-be38-787ded55e262</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="Pre_TakeOver" pouType="functionBlock">
-                <interface>
-                  <inputVars>
-                    <variable name="ReqManual">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Requests</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="ReqRemote">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="ReqAuto">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="AckManual">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Acknowledgement från nya stationen</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="AckRemote">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="AckAuto">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="RelManual">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Release från nuvarande station</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="RelRemote">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="RelAuto">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="HB_Manual_OK">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Heartbeats</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="HB_Remote_OK">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="HB_Auto_OK">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Velocity">
-                      <type>
-                        <REAL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> (valfritt säkerhet)</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="SteeringAngle">
-                      <type>
-                        <REAL />
-                      </type>
-                    </variable>
-                  </inputVars>
-                  <outputVars>
-                    <variable name="GrantedManual">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="GrantedRemote">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="GrantedAuto">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="PendingReady">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Released">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="State">
-                      <type>
-                        <derived name="ETransitionState" />
-                      </type>
-                    </variable>
-                  </outputVars>
-                  <localVars>
-                    <variable name="Pending">
-                      <type>
-                        <derived name="EPendingMode" />
-                      </type>
-                    </variable>
-                    <variable name="xReqManualOld">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Pulsdetektering</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="xReqRemoteOld">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xReqAutoOld">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xReqManualPulse">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xReqRemotePulse">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xReqAutoPulse">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="tAckTimer">
-                      <type>
-                        <derived name="TON" />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Timer</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="MaxAckTime">
-                      <type>
-                        <TIME />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="TIME#3s0ms" />
-                      </initialValue>
-                    </variable>
-                  </localVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">ETransitionState.PRE_TAKEOVER;
-    tAckTimer(IN := TRUE, PT := MaxAckTime);
-
-    // Abort if no acknowledgement arrives in time
-    IF tAckTimer.Q THEN
-        Pending := EPendingMode.NONE;
-        PendingReady := FALSE;
-        Released := FALSE;
-        State := ETransitionState.STABLE;
-        tAckTimer(IN := FALSE, PT := MaxAckTime);
-
-    // New station has acknowledged readiness
-    ELSIF (Pending = EPendingMode.PENDING_MANUAL AND AckManual) OR
-          (Pending = EPendingMode.PENDING_REMOTE AND AckRemote) OR
-          (Pending = EPendingMode.PENDING_AUTO   AND AckAuto) THEN
-
-        PendingReady := TRUE;
-        State := ETransitionState.VALIDATE_TAKEOVER;
-        tAckTimer(IN := FALSE, PT := MaxAckTime);
-    END_IF</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>22915457-3402-4466-ac0d-5a574c71762a</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="Validate_TakeOver" pouType="functionBlock">
-                <interface>
-                  <inputVars>
-                    <variable name="ReqManual">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="ReqRemote">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="ReqAuto">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="AckManual">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="AckRemote">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="AckAuto">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="RelManual">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="RelRemote">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="RelAuto">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="HB_Manual_OK">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="HB_Remote_OK">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="HB_Auto_OK">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Velocity">
-                      <type>
-                        <REAL />
-                      </type>
-                    </variable>
-                    <variable name="SteeringAngle">
-                      <type>
-                        <REAL />
-                      </type>
-                    </variable>
-                    <variable name="MaxVelocity">
-                      <type>
-                        <REAL />
-                      </type>
-                    </variable>
-                    <variable name="MaxSteering">
-                      <type>
-                        <REAL />
-                      </type>
-                    </variable>
-                    <variable name="MaxAckTime">
-                      <type>
-                        <TIME />
-                      </type>
-                    </variable>
-                  </inputVars>
-                  <outputVars>
-                    <variable name="Active">
-                      <type>
-                        <derived name="EControlMode" />
-                      </type>
-                    </variable>
-                    <variable name="GrantedManual">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="GrantedRemote">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="GrantedAuto">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="PendingReady">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Released">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="State">
-                      <type>
-                        <derived name="ETransitionState" />
-                      </type>
-                    </variable>
-                  </outputVars>
-                  <localVars>
-                    <variable name="Pending">
-                      <type>
-                        <derived name="EPendingMode" />
-                      </type>
-                    </variable>
-                    <variable name="xReqManualOld">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xReqRemoteOld">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xReqAutoOld">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xReqManualPulse">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xReqRemotePulse">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xReqAutoPulse">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="tAckTimer">
-                      <type>
-                        <derived name="TON" />
-                      </type>
-                    </variable>
-                  </localVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">ETransitionState.VALIDATE_TAKEOVER:
-
-    // Cancel if pending station is no longer valid
-    IF (Pending = EPendingMode.PENDING_MANUAL AND (NOT ReqManual OR NOT HB_Manual_OK)) OR
-       (Pending = EPendingMode.PENDING_REMOTE AND (NOT ReqRemote OR NOT HB_Remote_OK)) OR
-       (Pending = EPendingMode.PENDING_AUTO   AND (NOT ReqAuto   OR NOT HB_Auto_OK)) THEN
-
-        Pending := EPendingMode.NONE;
-        PendingReady := FALSE;
-        Released := FALSE;
-        State := ETransitionState.STABLE;
-
-    ELSE
-        Released := (Active = EControlMode.MANUAL AND RelManual) OR
-                    (Active = EControlMode.REMOTE AND RelRemote) OR
-                    (Active = EControlMode.AUTO   AND RelAuto);
-
-        IF Released AND PendingReady THEN
-            IF Pending = EPendingMode.PENDING_MANUAL THEN
-                Active := EControlMode.MANUAL;
-            ELSIF Pending = EPendingMode.PENDING_REMOTE THEN
-                Active := EControlMode.REMOTE;
-            ELSIF Pending = EPendingMode.PENDING_AUTO THEN
-                Active := EControlMode.AUTO;
-            END_IF;
-
-            Pending := EPendingMode.NONE;
-            PendingReady := FALSE;
-            Released := FALSE;
-            State := ETransitionState.STABLE;
-        END_IF
-    END_IF</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>aeb92afc-723e-4312-b7c4-f0ac11fff118</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -4762,8 +4305,6 @@ END_IF</xhtml>
             <Object Name="GVL_State" ObjectId="5c4a4848-76ab-49ed-92a5-267a71e47b4e" />
             <Object Name="IntegrityCheck" ObjectId="263bd72f-75ce-487e-b3b8-ec7f9d153e59" />
             <Object Name="DecisionLogger" ObjectId="88b66225-4fdc-4441-be38-787ded55e262" />
-            <Object Name="Pre_TakeOver" ObjectId="22915457-3402-4466-ac0d-5a574c71762a" />
-            <Object Name="Validate_TakeOver" ObjectId="aeb92afc-723e-4312-b7c4-f0ac11fff118" />
           </Object>
         </Object>
         <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
