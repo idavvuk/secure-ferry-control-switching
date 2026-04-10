@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-10T11:26:10.7991961" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-10T11:25:42.2789407" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-10T11:59:56.1499278" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-10T11:59:24.9462647" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2383,7 +2383,13 @@ xReqAutoOld := ReqAuto;
 
 //Initial state set
 IF Active = EControlMode.INIT THEN 
-	Active := EControlMode.MANUAL;
+	IF xReqManualPulse AND HB_Manual_OK THEN 
+		Active := EControlMode.MANUAL; 
+	ELSIF xReqRemotePulse AND HB_Remote_OK THEN 
+		Active := EControlMode.REMOTE; 
+	ELSIF xReqAutoPulse AND HB_Auto_OK THEN 
+		Active := EControlMode.AUTO;
+	END_IF
 END_IF
 
 
@@ -2779,20 +2785,34 @@ GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// Lamp outputs reflecting current system state
-OUT_GrantedManual := GrantedManual; 
-OUT_GrantedRemote := GrantedRemote; 
-OUT_GrantedAuto	  := GrantedAuto;
-OUT_ActiveManual  := (Active = EControlMode.MANUAL); 
-OUT_ActiveRemote  := (Active = EControlMode.REMOTE);
-OUT_ActiveAuto    := (Active = EControlMode.AUTO);
-OUT_Pending		  := (State = ETransitionState.PENDING_ACK); 
-OUT_PendingReady  := PendingReady; 
-OUT_Released	  := Released; 
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">//No outputs are active during INIT or FAILSAFE
+IF Active = EControlMode.INIT OR Active = EControlMode.FAILSAFE THEN 
+	OUT_ActiveManual := FALSE; 
+	OUT_ActiveRemote  := FALSE;
+	OUT_ActiveAuto    := FALSE;
+	OUT_GrantedManual := FALSE; 
+	OUT_GrantedRemote := FALSE; 
+	OUT_GrantedAuto	  := FALSE;
+	OUT_Pending		  := FALSE; 
+	OUT_PendingReady  := FALSE; 
+	OUT_Released	  := FALSE; 
+	OUT_FailSafe 	  := (Active = EControlMode.FAILSAFE);
+ELSE
+	OUT_GrantedManual := GrantedManual; 
+	OUT_GrantedRemote := GrantedRemote; 
+	OUT_GrantedAuto	  := GrantedAuto;
+	OUT_ActiveManual  := (Active = EControlMode.MANUAL); 
+	OUT_ActiveRemote  := (Active = EControlMode.REMOTE);
+	OUT_ActiveAuto    := (Active = EControlMode.AUTO);
+	OUT_Pending		  := (State = ETransitionState.PENDING_ACK); 
+	OUT_PendingReady  := PendingReady; 
+	OUT_Released	  := Released; 
+	OUT_FailSafe	  :=(Active = EControlMode.FAILSAFE);
+END_IF
+
 OUT_NoHB_Manual   := NOT HB_Manual_OK; 
 OUT_NoHB_Remote   := NOT HB_Remote_OK; 
 OUT_NoHB_Auto	  := NOT HB_Auto_OK;
-OUT_FailSafe	  :=(Active = EControlMode.FAILSAFE);
 
 (*
 Lamp_RequestManual := ReqManual;
