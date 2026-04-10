@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-10T10:48:15.5859447" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-10T10:48:03.6356807" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-10T11:19:08.1791487" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-10T11:18:57.7540999" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2453,9 +2453,11 @@ CASE State OF
 	//Transition has been granted, waiting for acknowledgement from both control modes
 	ETransitionState.VALIDATE_TAKEOVER: 
 		tAckTimer(IN := TRUE, PT := MaxAckTime); 
-		//cancel if requesting station is dropped or lost its heartbeat
-		IF (GrantedManual AND (NOT ReqManual OR NOT HB_Manual_OK)) OR 
-			(GrantedRemote AND (NOT ReqRemote OR NOT HB_Remote_OK)) THEN
+		
+		IF (Pending = EPendingMode.PENDING_MANUAL AND (NOT ReqManual OR NOT HB_Manual_OK)) OR
+			(Pending = EPendingMode.PENDING_REMOTE AND (NOT ReqRemote OR NOT HB_Remote_OK)) OR 
+			(Pending = EPendingMode.PENDING_AUTO AND (NOT ReqAuto OR NOT HB_Auto_OK)) THEN 
+			
 			Pending := EPendingMode.NONE; 
 			State := ETransitionState.STABLE; 
 			tAckTimer (IN := FALSE); // Reset timer
