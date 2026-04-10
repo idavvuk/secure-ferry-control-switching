@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-10T11:19:08.1791487" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-10T11:18:57.7540999" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-10T11:26:10.7991961" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-10T11:25:42.2789407" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2329,15 +2329,13 @@ xOk := NOT tonTimeout.Q;
                         <simpleValue value="FALSE" />
                       </initialValue>
                     </variable>
-                    <variable name="ActiveReady">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="Released">
                       <type>
                         <BOOL />
                       </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">	ActiveReady : BOOL;</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="PendingReady">
                       <type>
@@ -2461,7 +2459,7 @@ CASE State OF
 			Pending := EPendingMode.NONE; 
 			State := ETransitionState.STABLE; 
 			tAckTimer (IN := FALSE); // Reset timer
-			ActiveReady := FALSE;
+	//		ActiveReady := FALSE;
 			PendingReady := FALSE;
 			Released := FALSE;
 			
@@ -2469,20 +2467,20 @@ CASE State OF
 			Pending := EPendingMode.NONE; 
 			State := ETransitionState.STABLE; 
 			tAckTimer(IN := FALSE, PT := MaxAckTime); 
-			ActiveReady := FALSE;
+		//	ActiveReady := FALSE;
 			PendingReady := FALSE;
 			Released := FALSE;
 			
 		ELSE
-			//ACK from active station
-			ActiveReady := FALSE;
-				IF Active = EControlMode.MANUAL THEN
-					ActiveReady := AckManual;
-				ELSIF Active = EControlMode.REMOTE THEN
-					ActiveReady := AckRemote;
-				ELSIF Active = EControlMode.AUTO THEN
-					ActiveReady := AckAuto;
-				END_IF
+		//ACK from active station
+//		ActiveReady := FALSE;
+		//		IF Active = EControlMode.MANUAL THEN
+	//				ActiveReady := AckManual;
+	//			ELSIF Active = EControlMode.REMOTE THEN
+	//				ActiveReady := AckRemote;
+	//			ELSIF Active = EControlMode.AUTO THEN
+	//				ActiveReady := AckAuto;
+	//			END_IF
 			//Release from active station
 			Released := FALSE;
 				IF Active = EControlMode.MANUAL THEN
@@ -2491,8 +2489,7 @@ CASE State OF
 					Released := RelRemote;
 				ELSIF Active = EControlMode.AUTO THEN
 					Released := RelAuto;
-				END_IF
-			
+				END_IF		
 			//ACK from pending station
 			PendingReady := FALSE;
 				IF Pending = EPendingMode.PENDING_MANUAL THEN
@@ -2503,7 +2500,7 @@ CASE State OF
 					PendingReady := AckAuto;
 				END_IF
 
-			IF Released AND PendingReady AND ActiveReady THEN 
+			IF Released AND PendingReady THEN 
 				IF Pending = EPendingMode.PENDING_MANUAL THEN 
 					Active := EControlMode.MANUAL; 
 				ELSIF Pending = EPendingMode.PENDING_REMOTE THEN 
@@ -2514,7 +2511,7 @@ CASE State OF
 				Pending := EPendingMode.NONE; 
 				State := ETransitionState.STABLE; 
 				tAckTimer(IN := FALSE, PT := MaxAckTime); 
-				ActiveReady := FALSE;
+			//	ActiveReady := FALSE;
 				PendingReady := FALSE;
 				Released := FALSE; 
 					 
