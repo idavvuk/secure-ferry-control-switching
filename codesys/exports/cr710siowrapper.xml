@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-13T14:16:39.8717954" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-13T14:16:21.0948305" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-13T14:30:59.5291991" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-13T14:30:36.343632" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2901,7 +2901,7 @@ GVL_IO.AckManual := xAckManual;
 GVL_IO.RelManual := xRelManual; 
 
 GVL_IO.ReqRemote := xReqRemote; 
-GVL_IO.Ackremote := xAckRemote; 
+GVL_IO.AckRemote := xAckRemote; 
 GVL_IO.RelRemote := xRelRemote; 
 
 GVL_IO.ReqAuto	 := xReqAuto;
@@ -2916,21 +2916,7 @@ GVL_HeartBeat.HB_Manual_Signal := xHB_Manual;
 GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
 GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
 GVL_HeartBeat.HB_Remote_Mobile_Signal := xHB_Remote_Mobile; 
-
-//Koden kopierar råa signaler direkt utan någon 
-//rimlighetskontroll. Enligt arkitekturen ska 
-//IntegrityCheck validera inkommande signaler 
-//innan de når ControlUnit. Det verkar inte hända här.
-// En station bör inte kunna skicka Req, Ack och Rel samtidigt
-//IF xReqManual AND xAckManual THEN
-    // ogiltig kombination — logga och ignorera eller sätt till FAILSAFE
-//END_IF
-
-//frpga
-//Finns IntegrityCheck implementerad som ett 
-//separat block, eller är tanken att valideringen 
-//ska ske här i InputProcessing? Det påverkar var 
-//problemet ska lösas.</xhtml>
+</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -3437,8 +3423,29 @@ END_IF;
    (ReqManual AND ReqRemoteMobile) OR   
    (ReqRemote AND ReqAuto)	 OR
    (ReqRemote AND ReqRemoteMobile) OR 
-   (ReqAuto AND ReqRemoteMobile) OR //All cases added here??? 
-   (ReqManual AND RelManual) OR //a station requesting and releasing at the same time
+   (ReqAuto AND ReqRemoteMobile) THEN
+   
+   	Valid        := FALSE; 
+    ReqManual_Out := FALSE;
+    ReqRemote_Out := FALSE;
+	ReqAuto_Out	  := FALSE;
+	ReqRemoteMobile_Out := FALSE; 
+    AckManual_Out := AckManual;
+    AckRemote_Out := AckRemote;
+	AckAuto_Out	  := AckAuto;
+	AckRemoteMobile_Out := AckRemoteMobile; 
+    RelManual_Out := RelManual;
+    RelRemote_Out := RelRemote;
+	RelAuto_Out	  := RelAuto;
+	RelRemoteMobile_Out := RelRemoteMobile; 
+    HB_Manual_Out := HB_Manual_Signal;
+	HB_Remote_Out := HB_Remote_Signal;
+	HB_Auto_Out	  := HB_Auto_Signal;
+	HB_Remote_Mobile_Out := HB_Remote_Mobile_Signal; 
+    RETURN;
+END_IF
+   
+IF (ReqManual AND RelManual) OR //a station requesting and releasing at the same time
    (ReqRemote AND RelRemote) OR
    (ReqAuto AND RelAuto) OR
    (ReqRemoteMobile AND RelRemoteMobile) OR 
@@ -3459,10 +3466,10 @@ END_IF;
     RelRemote_Out := FALSE;
 	RelAuto_Out	  := FALSE;
 	RelRemoteMobile_Out := FALSE; 
-    HB_Manual_Out := HB_Manual_Signal;
-	HB_Remote_Out := HB_Remote_Signal;
-	HB_Auto_Out	  := HB_Auto_Signal;
-	HB_Remote_Mobile_Out := HB_Remote_Mobile_Signal; 
+    HB_Manual_Out := FALSE;
+	HB_Remote_Out := FALSE;
+	HB_Auto_Out	  := FALSE;
+	HB_Remote_Mobile_Out := FALSE; 
     RETURN;
 END_IF
 
