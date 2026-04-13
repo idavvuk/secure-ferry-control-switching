@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-13T14:01:05.3224265" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-13T14:00:47.5473484" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-13T14:16:39.8717954" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-13T14:16:21.0948305" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1433,7 +1433,27 @@ END_IF</xhtml>
               </data>
             </addData>
           </task>
-          <globalVars name="GVL_HeartBeat">
+          <globalVars name="GVL_HeartBeat" constant="true">
+            <variable name="HB_Generator_Interval">
+              <type>
+                <TIME />
+              </type>
+              <initialValue>
+                <simpleValue value="TIME#200ms" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">HB_Generator_Interval must always be less than HB_Monitor_Timeout
+Current margin: 300ms - adjust both if either value changes</xhtml>
+              </documentation>
+            </variable>
+            <variable name="HB_Monitor_Timeout">
+              <type>
+                <TIME />
+              </type>
+              <initialValue>
+                <simpleValue value="TIME#500ms" />
+              </initialValue>
+            </variable>
             <variable name="HB_Remote_Signal">
               <type>
                 <BOOL />
@@ -1482,6 +1502,74 @@ END_IF</xhtml>
               </data>
               <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                 <ObjectId>1ba4fcd4-7340-440d-ac0f-da43218d56a3</ObjectId>
+              </data>
+              <data name="http://www.3s-software.com/plcopenxml/mixedattrsvarlist" handleUnknown="implementation">
+                <MixedAttrsVarList>
+                  <globalVars name="GVL_HeartBeat" constant="true">
+                    <variable name="HB_Generator_Interval">
+                      <type>
+                        <TIME />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TIME#200ms" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">HB_Generator_Interval must always be less than HB_Monitor_Timeout
+Current margin: 300ms - adjust both if either value changes</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="HB_Monitor_Timeout">
+                      <type>
+                        <TIME />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TIME#500ms" />
+                      </initialValue>
+                    </variable>
+                  </globalVars>
+                  <globalVars name="GVL_HeartBeat">
+                    <variable name="HB_Remote_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Manual_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Auto_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Mobile_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Manual_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Auto_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Mobile_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </globalVars>
+                </MixedAttrsVarList>
               </data>
             </addData>
           </globalVars>
@@ -2184,7 +2272,7 @@ config_outgroups();
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">xPulse := (xSignal &lt;&gt; xPrevSignal);
 xPrevSignal := xSignal;
 // Om ingen ny puls kommer, låt timern gå 
-tonTimeout(IN := NOT xPulse, PT := T#500MS);
+tonTimeout(IN := NOT xPulse, PT := GVL_HeartBeat.HB_Monitor_Timeout);
 xOk := NOT tonTimeout.Q;
 </xhtml>
                   </ST>
@@ -3149,7 +3237,7 @@ tonToggle(IN := xEnable, PT := T#200MS);
 //När timer gått, växla signal
 IF tonToggle.Q THEN
 	xSignal 		:= NOT xSignal;
-	tonToggle(IN 	:= FALSE, PT := T#200MS);
+	tonToggle(IN 	:= FALSE, PT := GVL_HeartBeat.HB_Generator_Interval);
 	xEnable 		:= TRUE;
 END_IF;
 
