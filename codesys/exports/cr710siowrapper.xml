@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-13T11:06:03.5941148" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-13T11:05:44.200095" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-13T13:39:37.545548" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-13T13:38:48.4863632" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1449,6 +1449,11 @@ END_IF</xhtml>
                 <BOOL />
               </type>
             </variable>
+            <variable name="HB_Remote_Mobile_Signal">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
             <variable name="HB_Manual_OK">
               <type>
                 <BOOL />
@@ -1460,6 +1465,11 @@ END_IF</xhtml>
               </type>
             </variable>
             <variable name="HB_Auto_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="HB_Remote_Mobile_OK">
               <type>
                 <BOOL />
               </type>
@@ -1494,6 +1504,11 @@ END_IF</xhtml>
                 <BOOL />
               </type>
             </variable>
+            <variable name="ReqRemoteMobile">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
             <variable name="AckManual">
               <type>
                 <BOOL />
@@ -1512,6 +1527,11 @@ END_IF</xhtml>
                 <BOOL />
               </type>
             </variable>
+            <variable name="AckRemoteMobile">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
             <variable name="RelManual">
               <type>
                 <BOOL />
@@ -1526,6 +1546,11 @@ END_IF</xhtml>
               </type>
             </variable>
             <variable name="RelAuto">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="RelRemoteMobile">
               <type>
                 <BOOL />
               </type>
@@ -1584,6 +1609,11 @@ END_IF</xhtml>
                 <BOOL />
               </type>
             </variable>
+            <variable name="GrantedRemoteMobile">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
             <variable name="Released">
               <type>
                 <BOOL />
@@ -1611,7 +1641,7 @@ END_IF</xhtml>
             </variable>
             <variable name="TimeStamp">
               <type>
-                <DT />
+                <UDINT />
               </type>
             </variable>
             <addData>
@@ -1635,6 +1665,7 @@ END_IF</xhtml>
                       <value name="MANUAL" />
                       <value name="REMOTE" />
                       <value name="AUTO" />
+                      <value name="REMOTE_MOBILE" />
                       <value name="FAILSAFE" />
                     </values>
                   </enum>
@@ -1717,6 +1748,7 @@ END_IF</xhtml>
                       <value name="PENDING_MANUAL" />
                       <value name="PENDING_REMOTE" />
                       <value name="PENDING_AUTO" />
+                      <value name="PENDING_REMOTE_MOBILE" />
                     </values>
                   </enum>
                 </baseType>
@@ -1805,6 +1837,11 @@ END_IF</xhtml>
                         <derived name="FB_HeartBeatGenerator" />
                       </type>
                     </variable>
+                    <variable name="fbBGGen_Remote_Mobile">
+                      <type>
+                        <derived name="FB_HeartBeatGenerator" />
+                      </type>
+                    </variable>
                     <variable name="fbHB_Manual">
                       <type>
                         <derived name="FB_HeartBeat" />
@@ -1818,11 +1855,6 @@ END_IF</xhtml>
                     <variable name="fbHB_Auto">
                       <type>
                         <derived name="FB_HeartBeat" />
-                      </type>
-                    </variable>
-                    <variable name="RelRemote">
-                      <type>
-                        <INT />
                       </type>
                     </variable>
                   </localVars>
@@ -2183,6 +2215,11 @@ xOk := NOT tonTimeout.Q;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="ReqRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="AckManual">
                       <type>
                         <BOOL />
@@ -2194,6 +2231,11 @@ xOk := NOT tonTimeout.Q;
                       </type>
                     </variable>
                     <variable name="AckAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckRemoteMobile">
                       <type>
                         <BOOL />
                       </type>
@@ -2213,6 +2255,11 @@ xOk := NOT tonTimeout.Q;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="RelRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="HB_Manual_OK">
                       <type>
                         <BOOL />
@@ -2224,6 +2271,11 @@ xOk := NOT tonTimeout.Q;
                       </type>
                     </variable>
                     <variable name="HB_Auto_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Mobile_OK">
                       <type>
                         <BOOL />
                       </type>
@@ -2292,6 +2344,11 @@ xOk := NOT tonTimeout.Q;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="GrantedRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="State">
                       <type>
                         <derived name="ETransitionState" />
@@ -2333,6 +2390,14 @@ xOk := NOT tonTimeout.Q;
                         <simpleValue value="FALSE" />
                       </initialValue>
                     </variable>
+                    <variable name="xReqRemoteMobileOld">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="FALSE" />
+                      </initialValue>
+                    </variable>
                     <variable name="xReqRemotePulse">
                       <type>
                         <BOOL />
@@ -2350,6 +2415,14 @@ xOk := NOT tonTimeout.Q;
                       </initialValue>
                     </variable>
                     <variable name="xReqAutoPulse">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="FALSE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="xReqRemoteMobilePulse">
                       <type>
                         <BOOL />
                       </type>
@@ -2394,6 +2467,14 @@ xOk := NOT tonTimeout.Q;
                         <simpleValue value="FALSE" />
                       </initialValue>
                     </variable>
+                    <variable name="xPendingRemoteMobileLatch">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="FALSE" />
+                      </initialValue>
+                    </variable>
                     <variable name="RejectedRequestFlag">
                       <type>
                         <BOOL />
@@ -2412,10 +2493,12 @@ xOk := NOT tonTimeout.Q;
 xReqRemotePulse := ReqRemote AND NOT xReqRemoteOld; 
 xReqManualPulse := ReqManual AND NOT xReqManualOld; 
 xReqAutoPulse := ReqAuto AND NOT xReqAutoOld; 
+xReqRemoteMobilePulse := ReqRemoteMobile AND NOT xreqRemoteMobilePulse; 
 
 xReqRemoteOld := ReqRemote; 
 xReqManualOld := ReqManual; 
 xReqAutoOld := ReqAuto; 
+xReqRemoteMobileOld := ReqRemoteMobile; 
 
 
 
@@ -2445,27 +2528,30 @@ xReqAutoOld := ReqAuto;
 
 IF (Active = EControlMode.REMOTE AND NOT HB_Remote_OK) OR 
 	(Active = EControlMode.MANUAL AND NOT HB_Manual_OK) OR 
-	(Active = EControlMode.AUTO AND NOT HB_Auto_OK) THEN
-	Active := EControlMode.FAILSAFE; 
+	(Active = EControlMode.AUTO AND NOT HB_Auto_OK) OR 
+	(Active = EControlMode.REMOTE_MOBILE AND NOT HB_Remote_Mobile_OK) THEN
+	Active 	:= EControlMode.FAILSAFE; 
 	Pending := EPendingMode.NONE; 
-	State := ETransitionState.FAILSAFE; // gick från stable -&gt; failsafe annars gpr den till case stabe
-	GrantedManual := FALSE;
-	GrantedRemote := FALSE;
-	GrantedAuto := FALSE;
+	State 	:= ETransitionState.FAILSAFE; // gick från stable -&gt; failsafe annars gpr den till case stabe
+	GrantedManual 		:= FALSE;
+	GrantedRemote 		:= FALSE;
+	GrantedAuto 		:= FALSE;
+	GrantedRemoteMobile := FALSE; 
 	RETURN; 
 END_IF 
 
 //Block all signals if IntegrityCheck failed
 IF NOT Valid THEN
-	Active :=  EControlMode.FAILSAFE;
-	Pending := EPendingMode.NONE;
-	State := ETransitionState.FAILSAFE;
-	PendingReady := FALSE;
-	Released := FALSE;
+	Active 			:=  EControlMode.FAILSAFE;
+	Pending 		:= EPendingMode.NONE;
+	State 			:= ETransitionState.FAILSAFE;
+	PendingReady 	:= FALSE;
+	Released 		:= FALSE;
 	tAckTimer(IN := FALSE, PT := MaxAckTime);
 	GrantedManual := FALSE;
 	GrantedRemote := FALSE;
 	GrantedAuto := FALSE;
+	GrantedRemoteMobile := FALSE; 
 	RejectedRequestFlag := TRUE;
 	RejectionReason := 'FAILSAFE: INVALID_SIGNAL';
 	RETURN;	
@@ -2482,6 +2568,9 @@ CASE State OF
         ELSIF xReqAutoPulse AND HB_Auto_OK THEN
             Active := EControlMode.AUTO;
             State  := ETransitionState.STABLE;
+		ELSIF xReqRemoteMobilePulse AND HB_Remote_Mobile_OK THEN 
+			Active := EControlMode.REMOTE_MOBILE; 
+			State := ETransitionState.STABLE; 
         END_IF //ingen -&gt; stannar i init tills någon tar kontroll
 		
 	ETransitionState.FAILSAFE:
@@ -2505,29 +2594,37 @@ CASE State OF
 		ELSIF xReqAutoPulse THEN 
 			xPendingAutoLatch := TRUE; 
 			State := ETransitionState.PRE_TAKEOVER; 
+		ELSIF xReqRemoteMobilePulse THEN 
+			xPendingRemoteMobileLatch := TRUE; 
+			State := ETransitionState.PRE_TAKEOVER; 
 		END_IF
 	
 	ETransitionState.PRE_TAKEOVER:	
 		IF xPendingManualLatch AND Active &lt;&gt; EControlMode.MANUAL AND HB_Manual_OK THEN 
 			Pending := EPendingMode.PENDING_MANUAL; 
-			State := ETransitionState.VALIDATE_TAKEOVER; 
+			State 	:= ETransitionState.VALIDATE_TAKEOVER; 
 		ELSIF xPendingRemoteLatch AND Active &lt;&gt; EControlMode.REMOTE AND HB_Remote_OK THEN 
 			Pending := EPendingMode.PENDING_REMOTE; 
-			State := ETransitionState.VALIDATE_TAKEOVER; 
+			State 	:= ETransitionState.VALIDATE_TAKEOVER; 
 		ELSIF xPendingAutoLatch AND Active &lt;&gt; EControlMode.AUTO AND HB_Auto_OK THEN 
 			Pending := EPendingMode.PENDING_AUTO; 
 			State 	:= ETransitionState.VALIDATE_TAKEOVER; 
+		ELSIF xPendingRemoteMobileLatch AND Active &lt;&gt; EControlMode.REMOTE_MOBILE AND HB_Remote_Mobile_OK THEN 
+			Pending := EPendingMode.PENDING_AUTO; 
+			State	:= ETransitionState.VALIDATE_TAKEOVER; 
 		ELSE 
 			Pending := EPendingMode.NONE; 
 			State := ETransitionState.STABLE; 
 			RejectedRequestFlag := TRUE; 
 			IF (xPendingManualLatch AND NOT HB_Manual_OK) OR 
 				(xPendingRemoteLatch AND NOT HB_Remote_OK) OR 
-				(xPendingAutoLatch AND NOT HB_Auto_OK) THEN 
+				(xPendingAutoLatch AND NOT HB_Auto_OK) OR 
+				(xPendingRemoteMobileLatch AND NOT HB_Remote_Mobile_OK) THEN 
 					RejectionReason := 'Request rejected: Heartbeat failure'; 
 			ELSIF (xPendingManualLatch AND Active = EControlMode.MANUAL) OR 
 				(xPendingRemoteLatch AND Active = EControlMode.REMOTE) OR
-				(xPendingAutoLatch AND Active = EControlMode.AUTO) THEN 
+				(xPendingAutoLatch AND Active = EControlMode.AUTO) OR 
+				(xPendingRemoteMobileLatch AND Active = EControlMode.REMOTE_MOBILE) THEN  
 					RejectionReason := 'Request rejection: Station already active'; 
 			ELSE 
 					RejectionReason := 'Request rejected: Conflicting request'; 
@@ -2535,7 +2632,8 @@ CASE State OF
 		END_IF
 		xPendingManualLatch := FALSE; 
 		xPendingRemoteLatch := FALSE; 
-		xPendingAutoLatch 	:= FALSE; 
+		xPendingAutoLatch 	:= FALSE;
+		xPendingRemoteMobileLatch := FALSE; 
 		
 		
 		//IF Velocity &gt; MaxVelocity OR SteeringAngle &gt; MaxSteering THEN 
@@ -2554,8 +2652,8 @@ CASE State OF
 		
 		IF (Pending = EPendingMode.PENDING_MANUAL AND (NOT ReqManual OR NOT HB_Manual_OK)) OR
 			(Pending = EPendingMode.PENDING_REMOTE AND (NOT ReqRemote OR NOT HB_Remote_OK)) OR 
-			(Pending = EPendingMode.PENDING_AUTO AND (NOT ReqAuto OR NOT HB_Auto_OK)) THEN 
-			
+			(Pending = EPendingMode.PENDING_AUTO AND (NOT ReqAuto OR NOT HB_Auto_OK)) OR 
+			(Pending = EPendingMode.PENDING_REMOTE_MOBILE AND (NOT ReqRemoteMobile OR NOT HB_Remote_Mobile_OK)) THEN  
 			Pending := EPendingMode.NONE; 
 			State := ETransitionState.STABLE; 
 			tAckTimer (IN := FALSE, PT := MaxAckTime); // Reset timer
@@ -2563,7 +2661,7 @@ CASE State OF
 			PendingReady := FALSE;
 			Released := FALSE;
 			RejectedRequestFlag := TRUE; 
-			RejectionReason := 'request rejected: Heartbeat loss during handover'; 
+			RejectionReason := 'Request rejected: Heartbeat loss during handover'; 
 			
 		ELSIF tAckTimer.Q THEN 
 			Pending := EPendingMode.NONE; 
@@ -2593,6 +2691,8 @@ CASE State OF
 					Released := RelRemote;
 				ELSIF Active = EControlMode.AUTO THEN
 					Released := RelAuto;
+				ELSIF Active = EControlMode.REMOTE_MOBILE THEN 
+					Released := RelRemoteMobile; 
 				END_IF		
 			//ACK from pending station
 			PendingReady := FALSE;
@@ -2602,12 +2702,13 @@ CASE State OF
 					PendingReady := AckRemote;
 				ELSIF Pending = EPendingMode.PENDING_AUTO THEN
 					PendingReady := AckAuto;
+				ELSIF Pending = EPendingMode.PENDING_REMOTE_MOBILE THEN 
+					PendingReady := AckRemoteMobile; 
 				END_IF
 			//Penfing får inte matcha Active - om det sker gå till FAILSAFE
 			IF (Pending = EPendingMode.PENDING_MANUAL AND Active = EControlMode.MANUAL) OR
 				(Pending = EPendingMode.PENDING_REMOTE AND Active = EControlMode.REMOTE) OR
 				(Pending = EPendingMode.PENDING_AUTO AND Active = EControlMode.AUTO) THEN
-				
 					Active 			:= EControlMode.FAILSAFE;
 					Pending 		:= EPendingMode.NONE;
 					State			:= ETransitionState.FAILSAFE;
@@ -2617,6 +2718,7 @@ CASE State OF
 					GrantedManual 	:= FALSE;
 					GrantedRemote 	:= FALSE;
 					GrantedAuto 	:= FALSE;
+					GrantedRemoteMobile := FALSE; 
 					RejectedRequestFlag := TRUE; 
 					RejectionReason := 'Request rejected: Integrity violation, pending matches active';
 					RETURN;		
@@ -2628,6 +2730,8 @@ CASE State OF
 					Active := EControlMode.REMOTE; 
 				ELSIF Pending = EPendingMode.PENDING_AUTO THEN
 					Active := EControlMode.AUTO;
+				ELSIF Pending = EPendingMode.PENDING_REMOTE_MOBILE THEN 
+					Active := EControlMode.REMOTE_MOBILE; 
 				END_IF
 				Pending := EPendingMode.NONE; 
 				State := ETransitionState.STABLE; 
@@ -2644,6 +2748,7 @@ END_CASE
 GrantedManual := (Pending = EPendingMode.PENDING_MANUAL);
 GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
 GrantedAuto   := (Pending = EPendingMode.PENDING_AUTO);
+GrantedRemoteMobile := (Pending = EPendingMode.PENDING_REMOTE_MOBILE); 
 
 //saknas:
 //beslut ska loggas??
@@ -2739,6 +2844,26 @@ GrantedAuto   := (Pending = EPendingMode.PENDING_AUTO);
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="xReqRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xAckRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xRelRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xHB_Remote_Mobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </inputVars>
                 </interface>
                 <body>
@@ -2756,9 +2881,14 @@ GVL_IO.ReqAuto	 := xReqAuto;
 GVL_IO.AckAuto	 := xAckAuto;
 GVL_IO.RelAuto	 := xRelAuto;
 
+GVL_IO.ReqRemoteMobile := xReqRemoteMobile; 
+GVL_IO.AckRemoteMobile := xAckRemoteMobile; 
+GVL_IO.RelRemoteMobile := xRelRemoteMobile;
+
 GVL_HeartBeat.HB_Manual_Signal := xHB_Manual; 
 GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
 GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
+GVL_HeartBeat.HB_Remote_Mobile_Signal := xHB_Remote_Mobile; 
 
 //Koden kopierar råa signaler direkt utan någon 
 //rimlighetskontroll. Enligt arkitekturen ska 
@@ -2802,6 +2932,11 @@ GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="ReqRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="GrantedManual">
                       <type>
                         <BOOL />
@@ -2813,6 +2948,11 @@ GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
                       </type>
                     </variable>
                     <variable name="GrantedAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="GrantedRemoteMobile">
                       <type>
                         <BOOL />
                       </type>
@@ -2852,6 +2992,11 @@ GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="HB_Remote_Mobile_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </inputVars>
                   <outputVars>
                     <variable name="OUT_GrantedManual">
@@ -2869,6 +3014,11 @@ GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="OUT_GrantedRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="OUT_ActiveManual">
                       <type>
                         <BOOL />
@@ -2880,6 +3030,11 @@ GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
                       </type>
                     </variable>
                     <variable name="OUT_ActiveAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="OUT_ActiveRemoteMobile">
                       <type>
                         <BOOL />
                       </type>
@@ -2923,7 +3078,32 @@ GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
                         <xhtml xmlns="http://www.w3.org/1999/xhtml">loss of heartbeat</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="OUT_NoHB_RemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="OUT_FailSafe">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="OUT_State_Stable">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="OUT_State_Validate">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="OUT_State_FailSafe">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="OUT_RejectedRequestFlag">
                       <type>
                         <BOOL />
                       </type>
@@ -2937,9 +3117,11 @@ IF Active = EControlMode.INIT OR Active = EControlMode.FAILSAFE THEN
 	OUT_ActiveManual := FALSE; 
 	OUT_ActiveRemote  := FALSE;
 	OUT_ActiveAuto    := FALSE;
+	OUT_ActiveRemoteMobile := FALSE; 
 	OUT_GrantedManual := FALSE; 
 	OUT_GrantedRemote := FALSE; 
 	OUT_GrantedAuto	  := FALSE;
+	OUT_GrantedRemoteMobile := FALSE; 
 	OUT_Pending		  := FALSE; 
 	OUT_PendingReady  := FALSE; 
 	OUT_Released	  := FALSE; 
@@ -2948,20 +3130,28 @@ ELSE
 	OUT_GrantedManual := GrantedManual; 
 	OUT_GrantedRemote := GrantedRemote; 
 	OUT_GrantedAuto	  := GrantedAuto;
+	OUT_GrantedRemoteMobile := GrantedRemoteMobile; 
 	OUT_ActiveManual  := (Active = EControlMode.MANUAL); 
 	OUT_ActiveRemote  := (Active = EControlMode.REMOTE);
 	OUT_ActiveAuto    := (Active = EControlMode.AUTO);
+	OUT_ActiveRemoteMobile := (Active = EControlMode.REMOTE_MOBILE); 
 	OUT_Pending		  := (State = ETransitionState.VALIDATE_TAKEOVER) OR 
 						 (State = EtransitionState.PRE_TAKEOVER); 
 	OUT_PendingReady  := PendingReady; 
 	OUT_Released	  := Released; 
-	OUT_FailSafe	  := FALSE;  
 END_IF
-
+OUT_FailSafe	  := FALSE;  
+OUT_RejectedRequestFlag := GVL_State.RejectedRequestFlag; 
 //Heartbeat should be visible regardless of mode we're in
 OUT_NoHB_Manual   := NOT HB_Manual_OK; 
 OUT_NoHB_Remote   := NOT HB_Remote_OK; 
 OUT_NoHB_Auto	  := NOT HB_Auto_OK;
+OUT_NoHB_RemoteMobile := NOT HB_Remote_Mobile_OK; 
+
+OUT_State_Stable := (State = ETransitionState.STABLE); 
+OUT_State_Validate := (State = ETransitionState.VALIDATE_TAKEOVER); 
+OUT_State_FailSafe := (State = ETransitionState.FAILSAFE); 
+
 
 (*
 Lamp_RequestManual := ReqManual;
@@ -3019,9 +3209,9 @@ tonToggle(IN := xEnable, PT := T#200MS);
 
 //När timer gått, växla signal
 IF tonToggle.Q THEN
-	xSignal := NOT xSignal;
-	tonToggle(IN := FALSE, PT := T#200MS);
-	xEnable := TRUE;
+	xSignal 		:= NOT xSignal;
+	tonToggle(IN 	:= FALSE, PT := T#200MS);
+	xEnable 		:= TRUE;
 END_IF;
 
 //Heartbeat-generatorns intervall och heartbeat-monitorns 
@@ -3056,6 +3246,11 @@ END_IF;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="ReqRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="AckManual">
                       <type>
                         <BOOL />
@@ -3067,6 +3262,11 @@ END_IF;
                       </type>
                     </variable>
                     <variable name="AckAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckRemoteMobile">
                       <type>
                         <BOOL />
                       </type>
@@ -3086,6 +3286,11 @@ END_IF;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="RelRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="HB_Manual_Signal">
                       <type>
                         <BOOL />
@@ -3097,6 +3302,11 @@ END_IF;
                       </type>
                     </variable>
                     <variable name="HB_Auto_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Mobile_Signal">
                       <type>
                         <BOOL />
                       </type>
@@ -3126,6 +3336,11 @@ END_IF;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="ReqRemoteMobile_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="AckManual_Out">
                       <type>
                         <BOOL />
@@ -3137,6 +3352,11 @@ END_IF;
                       </type>
                     </variable>
                     <variable name="AckAuto_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckRemoteMobile_Out">
                       <type>
                         <BOOL />
                       </type>
@@ -3156,6 +3376,11 @@ END_IF;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="RelRemoteMobile_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="HB_Manual_Out">
                       <type>
                         <BOOL />
@@ -3171,32 +3396,46 @@ END_IF;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="HB_Remote_Mobile_Out">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </outputVars>
                 </interface>
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">IF (ReqManual AND ReqRemote) OR //two stations want control
-   (ReqManual AND ReqAuto) 	 OR	   
+   (ReqManual AND ReqAuto) 	 OR	 
+   (ReqManual AND ReqRemoteMobile) OR   
    (ReqRemote AND ReqAuto)	 OR
+   (ReqRemote AND ReqRemoteMobile) OR 
+   (ReqAuto AND ReqRemoteMobile) OR //All cases added here??? 
    (ReqManual AND RelManual) OR //a station requesting and releasing at the same time
    (ReqRemote AND RelRemote) OR
    (ReqAuto AND RelAuto) OR
+   (ReqRemoteMobile AND RelRemoteMobile) OR 
    (AckManual AND RelManual) OR //Station acknowledging and releasing simutaneously 
    (AckRemote AND RelRemote) OR
-   (AckAuto AND RelAuto) THEN
+   (AckAuto AND RelAuto) OR
+   (AckRemoteMobile AND RelRemoteMobile) THEN
    	Valid        := FALSE; 
     ReqManual_Out := FALSE;
     ReqRemote_Out := FALSE;
 	ReqAuto_Out	  := FALSE;
+	ReqRemoteMobile_Out := FALSE; 
     AckManual_Out := FALSE;
     AckRemote_Out := FALSE;
 	AckAuto_Out	  := FALSE;
+	AckRemoteMobile_Out := FALSE; 
     RelManual_Out := FALSE;
     RelRemote_Out := FALSE;
 	RelAuto_Out	  := FALSE;
+	RelRemoteMobile_Out := FALSE; 
     HB_Manual_Out := HB_Manual_Signal;
 	HB_Remote_Out := HB_Remote_Signal;
 	HB_Auto_Out	  := HB_Auto_Signal;
+	HB_Remote_Mobile_Out := HB_Remote_Mobile_Signal; 
     RETURN;
 END_IF
 
@@ -3204,15 +3443,19 @@ Valid         := TRUE;
 ReqManual_Out := ReqManual;
 ReqRemote_Out := ReqRemote;
 ReqAuto_Out	  := ReqAuto;
+ReqRemoteMobile_Out := ReqRemoteMobile;
 AckManual_Out := AckManual;
 AckRemote_Out := AckRemote;
 AckAuto_Out	  := AckAuto;
+AckRemoteMobile_Out := AckRemoteMobile; 
 RelManual_Out := RelManual;
 RelRemote_Out := RelRemote;
 RelAuto_Out   := RelAuto;
+RelRemoteMobile_Out := RelRemoteMobile; 
 HB_Manual_Out := HB_Manual_Signal;
 HB_Remote_Out := HB_Remote_Signal;
-HB_Auto_Out	  := HB_Auto_Signal;</xhtml>
+HB_Auto_Out	  := HB_Auto_Signal;
+HB_Remote_Mobile_Out := HB_Remote_Mobile_Signal; </xhtml>
                   </ST>
                 </body>
                 <addData>
