@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-13T13:39:37.545548" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-13T13:38:48.4863632" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-13T14:01:05.3224265" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-13T14:00:47.5473484" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2434,9 +2434,6 @@ xOk := NOT tonTimeout.Q;
                       <type>
                         <BOOL />
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml">	ActiveReady : BOOL;</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="PendingReady">
                       <type>
@@ -2493,38 +2490,12 @@ xOk := NOT tonTimeout.Q;
 xReqRemotePulse := ReqRemote AND NOT xReqRemoteOld; 
 xReqManualPulse := ReqManual AND NOT xReqManualOld; 
 xReqAutoPulse := ReqAuto AND NOT xReqAutoOld; 
-xReqRemoteMobilePulse := ReqRemoteMobile AND NOT xreqRemoteMobilePulse; 
+xReqRemoteMobilePulse := ReqRemoteMobile AND NOT xreqRemoteMobileOld; 
 
 xReqRemoteOld := ReqRemote; 
 xReqManualOld := ReqManual; 
 xReqAutoOld := ReqAuto; 
 xReqRemoteMobileOld := ReqRemoteMobile; 
-
-
-
-//Initial state set
-//IF Active = EControlMode.INIT THEN 
-	//IF xReqManualPulse AND HB_Manual_OK THEN 
-		//Active := EControlMode.MANUAL; 
-	//ELSIF xReqRemotePulse AND HB_Remote_OK THEN 
-		//Active := EControlMode.REMOTE; 
-	//ELSIF xReqAutoPulse AND HB_Auto_OK THEN 
-		//Active := EControlMode.AUTO;
-	//ELSE 
-		//Active := EControlMode.FAILSAFE;
-	//END_IF
-//END_IF
-
-
-//If in FailSafe then we block everything else
-//IF Active = EControlMode.FAILSAFE THEN 
-	//Active := EControlMode.FAILSAFE;
-	//Pending := EPendingMode.NONE; //set pending to none
-	//State := ETransitionState.STABLE; //no transition active 
-	//RETURN;
-	//kan göra så att granted aldrig nollställs
-//END_IF
-
 
 IF (Active = EControlMode.REMOTE AND NOT HB_Remote_OK) OR 
 	(Active = EControlMode.MANUAL AND NOT HB_Manual_OK) OR 
@@ -2610,7 +2581,7 @@ CASE State OF
 			Pending := EPendingMode.PENDING_AUTO; 
 			State 	:= ETransitionState.VALIDATE_TAKEOVER; 
 		ELSIF xPendingRemoteMobileLatch AND Active &lt;&gt; EControlMode.REMOTE_MOBILE AND HB_Remote_Mobile_OK THEN 
-			Pending := EPendingMode.PENDING_AUTO; 
+			Pending := EPendingMode.PENDING_REMOTE_MOBILE; 
 			State	:= ETransitionState.VALIDATE_TAKEOVER; 
 		ELSE 
 			Pending := EPendingMode.NONE; 
@@ -2657,7 +2628,6 @@ CASE State OF
 			Pending := EPendingMode.NONE; 
 			State := ETransitionState.STABLE; 
 			tAckTimer (IN := FALSE, PT := MaxAckTime); // Reset timer
-	//		ActiveReady := FALSE;
 			PendingReady := FALSE;
 			Released := FALSE;
 			RejectedRequestFlag := TRUE; 
@@ -2667,23 +2637,12 @@ CASE State OF
 			Pending := EPendingMode.NONE; 
 			State := ETransitionState.STABLE; 
 			tAckTimer(IN := FALSE, PT := MaxAckTime); 
-		//	ActiveReady := FALSE;
 			PendingReady := FALSE;
 			Released := FALSE;
 			RejectedRequestFlag := TRUE; 
 			RejectionReason := 'Request rejected: acknowledgement timeout'; 
 			
 		ELSE
-		//ACK from active station
-//		ActiveReady := FALSE;
-		//		IF Active = EControlMode.MANUAL THEN
-	//				ActiveReady := AckManual;
-	//			ELSIF Active = EControlMode.REMOTE THEN
-	//				ActiveReady := AckRemote;
-	//			ELSIF Active = EControlMode.AUTO THEN
-	//				ActiveReady := AckAuto;
-	//			END_IF
-			//Release from active station
 			Released := FALSE;
 				IF Active = EControlMode.MANUAL THEN
 					Released := RelManual;
@@ -2708,7 +2667,8 @@ CASE State OF
 			//Penfing får inte matcha Active - om det sker gå till FAILSAFE
 			IF (Pending = EPendingMode.PENDING_MANUAL AND Active = EControlMode.MANUAL) OR
 				(Pending = EPendingMode.PENDING_REMOTE AND Active = EControlMode.REMOTE) OR
-				(Pending = EPendingMode.PENDING_AUTO AND Active = EControlMode.AUTO) THEN
+				(Pending = EPendingMode.PENDING_AUTO AND Active = EControlMode.AUTO) OR
+				(Pending = EPendingMode.PENDING_REMOTE_MOBILE AND Active = EControlMode.REMOTE_MOBILE) THEN
 					Active 			:= EControlMode.FAILSAFE;
 					Pending 		:= EPendingMode.NONE;
 					State			:= ETransitionState.FAILSAFE;
@@ -2736,7 +2696,6 @@ CASE State OF
 				Pending := EPendingMode.NONE; 
 				State := ETransitionState.STABLE; 
 				tAckTimer(IN := FALSE, PT := MaxAckTime); 
-			//	ActiveReady := FALSE;
 				PendingReady := FALSE;
 				Released := FALSE; 
 			END_IF
@@ -2750,26 +2709,6 @@ GrantedRemote := (Pending = EPendingMode.PENDING_REMOTE);
 GrantedAuto   := (Pending = EPendingMode.PENDING_AUTO);
 GrantedRemoteMobile := (Pending = EPendingMode.PENDING_REMOTE_MOBILE); 
 
-//saknas:
-//beslut ska loggas??
-//Stable -&gt; finns inget skydd mot två pulser anländer exakt samma cykel. antingen dokumentera 
-	// prioriteringsordningen explicit som ett ADR eller dektektera simultana request coh avisa båda
-	//onödigt skickar en signal till sig själv
-//ändrade så att den gick in i failsade i INIT bör dokumenteras i arkutekturen
-//pre takover med latcharna, nollställs dom vilke är ok. 
-	// innebär att en request tyst ignoreras om heartbeat inte är OK vid exakt den cykeln. Bör loggas
-		
-// Released kontrollerar att aktiv station skickat en release-signal, men det finns ingen 
-	//kontroll att aktiv station faktiskt slutat påverka aktuatorer. Det är ett 
-	//arkitekturproblem snarare än ett kodproblem, men bör noteras som en risk.
-	
-//I PRE_TAKEOVER kontrolleras Active &lt;&gt; EControlMode.MANUAL etc. 
-	//Men om detta på något sätt kringgås finns inget skydd längre 
-	//ned i VALIDATE_TAKEOVER mot att en station bekräftar en övergång 
-	//till sig själv.
-
-//flytta in init och failsafe in i case. Det finns två separata styrsystem som kan köras efter
-	// varandra varje scan. kan skapa problem - båda kan köras samma cykel
 </xhtml>
                   </ST>
                 </body>
