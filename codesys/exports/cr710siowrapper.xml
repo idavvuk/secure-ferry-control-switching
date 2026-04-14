@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-14T13:33:59.0650764" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-14T13:33:39.2038023" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-14T14:17:22.3455669" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-14T14:17:09.9419639" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -90,6 +90,11 @@
                 <BOOL />
               </type>
             </variable>
+            <variable name="HB_Remote_Mobile_OK">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                 <Attributes>
@@ -121,6 +126,11 @@
                         <derived name="MonitoringChannel" />
                       </type>
                     </variable>
+                    <variable name="fbShutdownService">
+                      <type>
+                        <derived name="ShutdownService" />
+                      </type>
+                    </variable>
                   </localVars>
                 </interface>
                 <body>
@@ -128,8 +138,13 @@
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">fbMonitoringChannel(
 	HB_Manual_OK := EVL.HB_Manual_OK, 
 	HB_Remote_OK := EVL.HB_Remote_OK,
-	HB_Auto_OK	 := EVL.HB_Auto_OK
-);</xhtml>
+	HB_Auto_OK	 := EVL.HB_Auto_OK, 
+	HB_Remote_Mobile_OK := EVL.HB_Remote_Mobile_OK
+);
+
+fbShutdownService( 
+	EmergencyShutdown := fbMonitoringChannel.EmergencyShutdown
+); </xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -154,6 +169,11 @@
                       </type>
                     </variable>
                     <variable name="HB_Auto_OK">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Mobile_OK">
                       <type>
                         <BOOL />
                       </type>
@@ -186,6 +206,11 @@ fbHB_Remote_Mon : FB_HeartBeat; //Blir problem om man sätter HeartBeat i Safety
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="HB_Remote_Mobile_Fail">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </localVars>
                 </interface>
                 <body>
@@ -194,20 +219,52 @@ fbHB_Remote_Mon : FB_HeartBeat; //Blir problem om man sätter HeartBeat i Safety
 HB_Manual_Fail := NOT HB_Manual_OK; 
 HB_Remote_Fail := NOT HB_Remote_OK; 
 HB_Auto_Fail   := NOT HB_Auto_OK;
+HB_Remote_Mobile_Fail := NOT HB_Remote_Mobile_OK; 
 
-IF HB_Manual_Fail AND HB_Remote_Fail AND HB_Auto_Fail THEN 
+IF HB_Manual_Fail AND HB_Remote_Fail AND HB_Auto_Fail AND HB_Remote_Mobile_Fail THEN 
 	EmergencyShutdown := TRUE; 
 END_IF
 
-
-IF EmergencyShutdown THEN 
-	RETURN;
-END_IF</xhtml>
+</xhtml>
                   </ST>
                 </body>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>430663ed-353b-4cdf-8bd3-b815c7ac825e</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="ShutdownService" pouType="functionBlock">
+                <interface>
+                  <inputVars>
+                    <variable name="EmergencyShutdown">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <localVars>
+                    <variable name="Alert">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">//Once triggered, the alert stays TRUE until system restart
+
+IF EmergencyShutdown THEN 
+	Alert := TRUE; 
+END_IF</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>4221456a-8835-4bbb-8fd7-407f87eb3add</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -4840,6 +4897,7 @@ LastRejectedRequest := RejectedRequestFlag;
             <Object Name="PLC_PRG" ObjectId="1b546755-920e-4ccd-be91-e4be881d8e4e" />
             <Object Name="Task" ObjectId="e2894a44-2e4c-477e-9bf1-3cc1b1eae293" />
             <Object Name="MonitoringChannel" ObjectId="430663ed-353b-4cdf-8bd3-b815c7ac825e" />
+            <Object Name="ShutdownService" ObjectId="4221456a-8835-4bbb-8fd7-407f87eb3add" />
           </Object>
         </Object>
         <Object Name="StandardPLC" ObjectId="3bdc48cb-bb98-4005-b1bd-09c0886cf7bc">
