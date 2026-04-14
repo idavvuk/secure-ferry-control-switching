@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 6" creationDateTime="2026-04-13T14:36:17.717258" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-13T14:35:57.4861655" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-14T09:36:45.6694626" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-14T09:36:32.063443" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1925,7 +1925,7 @@ Current margin: 300ms - adjust both if either value changes</xhtml>
                         <derived name="FB_HeartBeatGenerator" />
                       </type>
                     </variable>
-                    <variable name="fbBGGen_Remote_Mobile">
+                    <variable name="fbHBGen_Remote_Mobile">
                       <type>
                         <derived name="FB_HeartBeatGenerator" />
                       </type>
@@ -1941,6 +1941,11 @@ Current margin: 300ms - adjust both if either value changes</xhtml>
                       </type>
                     </variable>
                     <variable name="fbHB_Auto">
+                      <type>
+                        <derived name="FB_HeartBeat" />
+                      </type>
+                    </variable>
+                    <variable name="fbHB_Remote_Mobile">
                       <type>
                         <derived name="FB_HeartBeat" />
                       </type>
@@ -1963,25 +1968,31 @@ fbInputProcessing(
 fbHB_Manual(xSignal := GVL_HeartBeat.HB_Manual_Signal); 
 fbHB_Remote(xSignal := GVL_HeartBeat.HB_Remote_Signal); 
 fbHB_Auto(xSignal 	:= GVL_HeartBeat.HB_Auto_Signal);
+fbHB_Remote_Mobile(xSignal := GVL_HeartBeat.HB_Remote_Mobile_Signal); 
 
 //Heartbeat generator
 fbHBGen_Manual(); 
 fbHBGen_Remote(); 
 fbHBGen_Auto();
+fbHBGen_Remote_Mobile(); 
 
 fbIntegrityCheck(
     ReqManual        := GVL_IO.ReqManual,
     ReqRemote        := GVL_IO.ReqRemote,
 	ReqAuto			 := GVL_IO.ReqAuto,
+	ReqRemoteMobile  := GVL_IO.ReqRemoteMobile,
     AckManual        := GVL_IO.AckManual,
     AckRemote        := GVL_IO.AckRemote,
 	AckAuto			 := GVL_IO.AckAuto,
+	AckRemoteMobile  := GVL_IO.AckRemoteMobile,
     RelManual        := GVL_IO.RelManual,
     RelRemote        := GVL_IO.RelRemote,
 	RelAuto			 := GVL_IO.RelAuto,
+	RelRemoteMobile  := GVL_IO.RelRemoteMobile,
     HB_Manual_Signal := GVL_HeartBeat.HB_Manual_Signal,
     HB_Remote_Signal := GVL_HeartBeat.HB_Remote_Signal,
-	HB_Auto_Signal	 := GVL_HeartBeat.HB_Auto_Signal
+	HB_Auto_Signal	 := GVL_HeartBeat.HB_Auto_Signal,
+	HB_Remote_Mobile_Signal := GVL_HeartBeat.HB_Remote_Mobile_Signal
 );
 
 fbControlUnit(
@@ -1994,31 +2005,41 @@ fbControlUnit(
 	ReqAuto			:= GVL_IO.ReqAuto,
 	AckAuto			:= GVL_IO.AckAuto,
 	RelAuto			:= GVL_IO.RelAuto,
+	ReqRemoteMobile := GVL_IO.ReqRemoteMobile, 
+	AckRemoteMobile := GVL_IO.AckRemoteMobile, 
+	RelRemoteMobile := GVL_IO.RelRemoteMobile,
 	HB_Manual_OK 	:= GVL_HeartBeat.HB_Manual_OK,
 	HB_Remote_OK 	:= GVL_HeartBeat.HB_Remote_OK,
-	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK
+	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK, 
+	HB_Remote_Mobile_OK := GVL_HeartBeat.HB_Remote_Mobile_OK
 );
 
 fbOutputProcessing(
     ReqManual       := GVL_IO.ReqManual,
     ReqRemote       := GVL_IO.ReqRemote,
 	ReqAuto	        := GVL_IO.ReqAuto,
+	ReqRemoteMobile := GVL_IO.ReqRemoteMobile,
     GrantedManual   := fbControlUnit.GrantedManual,
     GrantedRemote   := fbControlUnit.GrantedRemote,
 	GrantedAuto	    := fbControlUnit.GrantedAuto,
+	GrantedRemoteMobile := fbControlUnit.GrantedRemoteMobile,
 	Released 		:= fbControlUnit.Released,
 	PendingReady 	:= fbControlUnit.PendingReady,
     Active          := fbControlUnit.Active,
     State           := fbControlUnit.State,
     HB_Manual_OK    := GVL_HeartBeat.HB_Manual_OK,
     HB_Remote_OK    := GVL_HeartBeat.HB_Remote_OK,
-	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK
+	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK,
+	HB_Remote_Mobile_OK := GVL_HeartBeat.HB_Remote_Mobile_OK 
 );
 
 fbDecisionLogger( 
 	Active := fbControlUnit.Active,
 	Pending := fbControlUnit.Pending,   
-	State := fbControlUnit.State
+	State := fbControlUnit.State, 
+	RejectedRequestFlag := fbControlUnit.RejectedRequestFlag,
+	RejectionReason := fbControlUnit.RejectionReason
+	
 ); 
 	
 OUT0000.VAR_IN.uiValue := SEL(fbOutputProcessing.Out_GrantedManual, 0, 2500);
