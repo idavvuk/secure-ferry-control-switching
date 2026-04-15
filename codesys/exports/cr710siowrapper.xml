@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-15T14:57:57.8455753" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-15T14:57:45.1195138" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-15T23:51:38.163431" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-15T23:51:27.8134047" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2018,7 +2018,20 @@ fbInputProcessing(
 	xReqManual 			:= IN0100.VAR_OUT.xValueDigital,
 	xAckManual 			:= IN0101.VAR_OUT.xValueDigital, 
 	xRelManual 			:= IN0102.VAR_OUT.xValueDigital, 
-	xHB_Manual			:= IN0103.VAR_OUT.xValueDigital 
+	xHB_Manual			:= IN0103.VAR_OUT.xValueDigital, 
+	xReqRemote			:= GVL_IO.ReqRemote, 
+	xAckRemote			:= GVL_IO.AckRemote, 
+	xRelRemote        	:= GVL_IO.RelRemote,
+	xHB_Remote        := GVL_HeartBeat.HB_Remote_Signal,
+	xReqAuto          := GVL_IO.ReqAuto,
+    xAckAuto          := GVL_IO.AckAuto,
+    xRelAuto          := GVL_IO.RelAuto,
+    xHB_Auto          := GVL_HeartBeat.HB_Auto_Signal,
+	xReqRemoteMobile  := GVL_IO.ReqRemoteMobile,
+    xAckRemoteMobile  := GVL_IO.AckRemoteMobile,
+    xRelRemoteMobile  := GVL_IO.RelRemoteMobile,
+    xHB_Remote_Mobile := GVL_HeartBeat.HB_Remote_Mobile_Signal
+	
 );
 
 fbHB_Manual(xSignal := GVL_HeartBeat.HB_Manual_Signal); 
@@ -2032,38 +2045,39 @@ fbHBGen_Remote();
 fbHBGen_Auto();
 fbHBGen_Remote_Mobile(); 
 
+
 fbIntegrityCheck(
-    ReqManual        := GVL_IO.ReqManual,
-    ReqRemote        := GVL_IO.ReqRemote,
-	ReqAuto			 := GVL_IO.ReqAuto,
-	ReqRemoteMobile  := GVL_IO.ReqRemoteMobile,
-    AckManual        := GVL_IO.AckManual,
-    AckRemote        := GVL_IO.AckRemote,
-	AckAuto			 := GVL_IO.AckAuto,
-	AckRemoteMobile  := GVL_IO.AckRemoteMobile,
-    RelManual        := GVL_IO.RelManual,
-    RelRemote        := GVL_IO.RelRemote,
-	RelAuto			 := GVL_IO.RelAuto,
-	RelRemoteMobile  := GVL_IO.RelRemoteMobile,
-    HB_Manual_Signal := GVL_HeartBeat.HB_Manual_Signal,
-    HB_Remote_Signal := GVL_HeartBeat.HB_Remote_Signal,
-	HB_Auto_Signal	 := GVL_HeartBeat.HB_Auto_Signal,
-	HB_Remote_Mobile_Signal := GVL_HeartBeat.HB_Remote_Mobile_Signal
+    ReqManual        := fbInputProcessing.ReqManual,
+    ReqRemote        := fbInputProcessing.ReqRemote,
+	ReqAuto			 := fbInputProcessing.ReqAuto,
+	ReqRemoteMobile  := fbInputProcessing.ReqRemoteMobile,
+    AckManual        := fbInputProcessing.AckManual,
+    AckRemote        := fbInputProcessing.AckRemote,
+	AckAuto			 := fbInputProcessing.AckAuto,
+	AckRemoteMobile  := fbInputProcessing.AckRemoteMobile,
+    RelManual        := fbInputProcessing.RelManual,
+    RelRemote        := fbInputProcessing.RelRemote,
+	RelAuto			 := fbInputProcessing.RelAuto,
+	RelRemoteMobile  := fbInputProcessing.RelRemoteMobile,
+    HB_Manual_Signal := fbInputProcessing.HB_Manual_Signal,
+    HB_Remote_Signal := fbInputProcessing.HB_Remote_Signal,
+	HB_Auto_Signal	 := fbInputProcessing.HB_Auto_Signal,
+	HB_Remote_Mobile_Signal := fbInputProcessing.HB_Remote_Mobile_Signal, 
 );
 
 fbControlUnit(
-    ReqManual  		:= GVL_IO.ReqManual,
-	AckManual   	:= GVL_IO.AckManual,
-	RelManual   	:= GVL_IO.RelManual,
-    ReqRemote   	:= GVL_IO.ReqRemote,
-    AckRemote   	:= GVL_IO.AckRemote,
-    RelRemote   	:= GVL_IO.RelRemote,
-	ReqAuto			:= GVL_IO.ReqAuto,
-	AckAuto			:= GVL_IO.AckAuto,
-	RelAuto			:= GVL_IO.RelAuto,
-	ReqRemoteMobile := GVL_IO.ReqRemoteMobile, 
-	AckRemoteMobile := GVL_IO.AckRemoteMobile, 
-	RelRemoteMobile := GVL_IO.RelRemoteMobile,
+    ReqManual  		:= fbInputProcessing.ReqManual,
+	AckManual   	:= fbInputProcessing.AckManual,
+	RelManual   	:= fbInputProcessing.RelManual,
+    ReqRemote   	:= fbInputProcessing.ReqRemote,
+    AckRemote   	:= fbInputProcessing.AckRemote,
+    RelRemote   	:= fbInputProcessing.RelRemote,
+	ReqAuto			:= fbInputProcessing.ReqAuto,
+	AckAuto			:= fbInputProcessing.AckAuto,
+	RelAuto			:= fbInputProcessing.RelAuto,
+	ReqRemoteMobile := fbInputProcessing.ReqRemoteMobile, 
+	AckRemoteMobile := fbInputProcessing.AckRemoteMobile, 
+	RelRemoteMobile := fbInputProcessing.RelRemoteMobile,
 	HB_Manual_OK 	:= GVL_HeartBeat.HB_Manual_OK,
 	HB_Remote_OK 	:= GVL_HeartBeat.HB_Remote_OK,
 	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK, 
@@ -2993,30 +3007,114 @@ GrantedRemoteMobile := (Pending = EPendingMode.PENDING_REMOTE_MOBILE);
                       </type>
                     </variable>
                   </inputVars>
+                  <outputVars>
+                    <variable name="ReqManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelManual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Manual_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ReqRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelRemote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ReqAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelAuto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Auto_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ReqRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="AckRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RelRemoteMobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="HB_Remote_Mobile_Signal">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </outputVars>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">
-GVL_IO.ReqManual := xReqManual; 
-GVL_IO.AckManual := xAckManual; 
-GVL_IO.RelManual := xRelManual; 
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// Manual input - with an added abstraction layer after the hardware channels
+ReqManual := xReqManual; 
+AckManual := xAckManual; 
+RelManual := xRelManual; 
+HB_Manual_Signal := xHB_Manual; 
 
-GVL_IO.ReqRemote := xReqRemote; 
-GVL_IO.AckRemote := xAckRemote; 
-GVL_IO.RelRemote := xRelRemote; 
+// Remote input - from BOOL input
+ReqRemote := xReqRemote; 
+AckRemote := xAckRemote; 
+RelRemote := xRelRemote; 
+HB_Remote_Signal := xHB_Remote;
 
-GVL_IO.ReqAuto	 := xReqAuto;
-GVL_IO.AckAuto	 := xAckAuto;
-GVL_IO.RelAuto	 := xRelAuto;
+// Autonomous input - from BOOL input
+ReqAuto	 := xReqAuto;
+AckAuto	 := xAckAuto;
+RelAuto	 := xRelAuto;
+HB_Auto_Signal   := xHB_Auto;
 
-GVL_IO.ReqRemoteMobile := xReqRemoteMobile; 
-GVL_IO.AckRemoteMobile := xAckRemoteMobile; 
-GVL_IO.RelRemoteMobile := xRelRemoteMobile;
-
-GVL_HeartBeat.HB_Manual_Signal := xHB_Manual; 
-GVL_HeartBeat.HB_Remote_Signal := xHB_Remote;
-GVL_HeartBeat.HB_Auto_Signal   := xHB_Auto;
-GVL_HeartBeat.HB_Remote_Mobile_Signal := xHB_Remote_Mobile; 
+// Remote mobile - from BOOL input
+ReqRemoteMobile := xReqRemoteMobile; 
+AckRemoteMobile := xAckRemoteMobile; 
+RelRemoteMobile := xRelRemoteMobile;
+HB_Remote_Mobile_Signal := xHB_Remote_Mobile; 
 </xhtml>
                   </ST>
                 </body>
