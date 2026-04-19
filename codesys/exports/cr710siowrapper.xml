@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-19T11:03:33.5240873" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-19T11:03:19.6124676" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-19T11:18:38.7148809" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-19T11:18:20.8704639" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1843,10 +1843,10 @@ Current margin: 300ms - adjust both if either value changes</xhtml>
                 <baseType>
                   <enum>
                     <values>
+                      <value name="INIT" />
                       <value name="STABLE" />
                       <value name="PRE_TAKEOVER" />
                       <value name="VALIDATE_TAKEOVER" />
-                      <value name="INIT" />
                       <value name="FAILSAFE" />
                     </values>
                   </enum>
@@ -1858,12 +1858,6 @@ Current margin: 300ms - adjust both if either value changes</xhtml>
                         <Name>STABLE</Name>
                         <Documentation>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">No switch in progress</xhtml>
-                        </Documentation>
-                      </EnumValue>
-                      <EnumValue>
-                        <Name>PRE_TAKEOVER</Name>
-                        <Documentation>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">PENDING_ACK, 	//Switch in progress, waiting for acknowledgement</xhtml>
                         </Documentation>
                       </EnumValue>
                     </EnumValueDocumentation>
