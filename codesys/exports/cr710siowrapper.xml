@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-19T11:18:38.7148809" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-19T11:18:20.8704639" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-19T11:37:01.2391873" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-19T11:36:51.5657568" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2103,7 +2103,8 @@ fbOutputProcessing(
     HB_Manual_OK    := GVL_HeartBeat.HB_Manual_OK,
     HB_Remote_OK    := GVL_HeartBeat.HB_Remote_OK,
 	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK,
-	HB_Remote_Mobile_OK := GVL_HeartBeat.HB_Remote_Mobile_OK 
+	HB_Remote_Mobile_OK := GVL_HeartBeat.HB_Remote_Mobile_OK,
+	RejectedRequestFlag := fbControlUnit.RejectedRequestFlag
 );
 
 fbDecisionLogger( 
@@ -3210,6 +3211,11 @@ HB_Remote_Mobile_Signal := xHB_Remote_Mobile;
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="RejectedRequestFlag">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </inputVars>
                   <outputVars>
                     <variable name="OUT_GrantedManual">
@@ -3353,7 +3359,7 @@ ELSE
 	OUT_Released	  := Released; 
 END_IF
 OUT_FailSafe	  := (Active = EControlMode.FAILSAFE);  
-OUT_RejectedRequestFlag := GVL_State.RejectedRequestFlag; 
+OUT_RejectedRequestFlag := RejectedRequestFlag; 
 //Heartbeat should be visible regardless of mode we're in
 OUT_NoHB_Manual   := NOT HB_Manual_OK; 
 OUT_NoHB_Remote   := NOT HB_Remote_OK; 
