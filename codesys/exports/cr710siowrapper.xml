@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-19T11:37:01.2391873" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-19T11:36:51.5657568" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-20T16:59:19.2426068" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-20T16:58:38.7761036" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -1700,6 +1700,26 @@ Current margin: 300ms - adjust both if either value changes</xhtml>
                 <BOOL />
               </type>
             </variable>
+            <variable name="ReleaseRequest_Manual">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="ReleaseRequest_Remote">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="Releaserequest_Auto">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="ReleaseRequest_Remote_Mobile">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                 <Attributes>
@@ -2104,7 +2124,6 @@ fbOutputProcessing(
     HB_Remote_OK    := GVL_HeartBeat.HB_Remote_OK,
 	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK,
 	HB_Remote_Mobile_OK := GVL_HeartBeat.HB_Remote_Mobile_OK,
-	RejectedRequestFlag := fbControlUnit.RejectedRequestFlag
 );
 
 fbDecisionLogger( 
@@ -2124,6 +2143,11 @@ OUT0004.VAR_IN.uiValue := SEL(fbOutputProcessing.OUT_Pending, 0, 2500);
 OUT0005.VAR_IN.uiValue := SEL(fbOutputProcessing.OUT_FailSafe, 0, 2500);
 OUT0006.VAR_IN.uiValue := SEL(fbOutputProcessing.OUT_GrantedAuto, 0, 2500);
 OUT0007.VAR_IN.uiValue := SEL(fbOutputProcessing.OUT_ActiveAuto, 0, 2500);
+
+GVL_IO.ReleaseRequest_Manual := fbControlUnit.ReleaseRequest_Manual; 
+GVL_IO.Releaserequest_Remote := fbControlUnit.ReleaseRequest_Remote; 
+GVL_IO.Releaserequest_Auto := fbControlUnit.ReleaseRequest_Auto; 
+GVL_IO.ReleaseRequest_Remote_Mobile := fbControlUnit.ReleaseRequest_Remote_Mobile;
 
 IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
 
@@ -2556,6 +2580,26 @@ xOk := NOT tonTimeout.Q;
                         <string />
                       </type>
                     </variable>
+                    <variable name="ReleaseRequest_Manual">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ReleaseRequest_Remote">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ReleaseRequest_Auto">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ReleaseRequest_Remote_Mobile">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                   </outputVars>
                   <localVars>
                     <variable name="Pending">
@@ -2825,6 +2869,12 @@ CASE State OF
 	//Transition completes when active station releases and pending station acknowledges
 	//Aborted if heartbeat is lost or acknowledgement timer expires
 	ETransitionState.VALIDATE_TAKEOVER: 
+		
+		ReleaseRequest_Manual := (Active = EControlMode.MANUAL); 
+		ReleaseRequest_Remote := (Active = EControlMode.REMOTE); 
+		ReleaseRequest_Auto := (Active = EControlMode.AUTO); 
+		ReleaseRequest_Remote_Mobile := (Active = EControlMode.REMOTE_MOBILE);
+		
 		tAckTimer(IN := TRUE, PT := MaxAckTime); 
 		
 		//Stop transition if the new station loses connection or cancels its request
@@ -2837,6 +2887,10 @@ CASE State OF
 			tAckTimer (IN := FALSE, PT := MaxAckTime); // Reset timer
 			PendingReady := FALSE;
 			Released := FALSE;
+			ReleaseRequest_Manual := FALSE; 
+			ReleaseRequest_Remote := FALSE; 
+			ReleaseRequest_Auto := FALSE; 
+			ReleaseRequest_Remote_Mobile := FALSE; 
 			RejectedRequestFlag := TRUE; 
 			RejectionReason := 'Request rejected: Heartbeat loss during handover'; 
 		
@@ -2847,6 +2901,10 @@ CASE State OF
 			tAckTimer(IN := FALSE, PT := MaxAckTime); 
 			PendingReady := FALSE;
 			Released := FALSE;
+			ReleaseRequest_Manual := FALSE; 
+			ReleaseRequest_Remote := FALSE; 
+			ReleaseRequest_Auto := FALSE; 
+			ReleaseRequest_Remote_Mobile := FALSE; 
 			RejectedRequestFlag := TRUE; 
 			RejectionReason := 'Request rejected: acknowledgement timeout'; 
 			
@@ -2884,7 +2942,11 @@ CASE State OF
 					GrantedManual 	:= FALSE;
 					GrantedRemote 	:= FALSE;
 					GrantedAuto 	:= FALSE;
-					GrantedRemoteMobile := FALSE; 
+					GrantedRemoteMobile := FALSE;
+					ReleaseRequest_Manual := FALSE; 
+					ReleaseRequest_Remote := FALSE; 
+					ReleaseRequest_Auto := FALSE; 
+					ReleaseRequest_Remote_Mobile := FALSE;  
 					RejectedRequestFlag := TRUE; 
 					RejectionReason := 'Request rejected: Integrity violation, pending matches active';
 					RETURN;		
@@ -2903,6 +2965,10 @@ CASE State OF
 				tAckTimer(IN := FALSE, PT := MaxAckTime); 
 				PendingReady := FALSE;
 				Released := FALSE; 
+				ReleaseRequest_Manual := FALSE; 
+				ReleaseRequest_Remote := FALSE; 
+				ReleaseRequest_Auto := FALSE; 
+				ReleaseRequest_Remote_Mobile := FALSE; 
 			END_IF
 	END_IF
 END_CASE
