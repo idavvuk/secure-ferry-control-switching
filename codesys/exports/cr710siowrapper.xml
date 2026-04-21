@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-21T19:03:52.8425868" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-21T19:03:42.3445825" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-21T21:13:09.1938356" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-21T21:12:49.7547457" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -191,10 +191,6 @@ fbShutdownService(
                       <type>
                         <BOOL />
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml">fbHB_Manual_Mon : FB_HeartBeat; //Ger error om man har dessa här då FB_HeartBeat inte finns i Safety
-fbHB_Remote_Mon : FB_HeartBeat; //Blir problem om man sätter HeartBeat i Safety pga TON, ska försöka hitta en lösning</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="HB_Remote_Fail">
                       <type>
@@ -1760,9 +1756,6 @@ Current margin: 300ms - adjust both if either value changes</xhtml>
               <type>
                 <BOOL />
               </type>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml">FailSafe      : BOOL;</xhtml>
-              </documentation>
             </variable>
             <variable name="GrantedRemote">
               <type>
@@ -2148,6 +2141,13 @@ GVL_IO.ReleaseRequest_Manual := fbControlUnit.ReleaseRequest_Manual;
 GVL_IO.Releaserequest_Remote := fbControlUnit.ReleaseRequest_Remote; 
 GVL_IO.Releaserequest_Auto := fbControlUnit.ReleaseRequest_Auto; 
 GVL_IO.ReleaseRequest_Remote_Mobile := fbControlUnit.ReleaseRequest_Remote_Mobile;
+
+EVC.EVL.HB_Manual_OK        := GVL_HeartBeat.HB_Manual_OK;
+EVC.EVL.HB_Remote_OK        := GVL_HeartBeat.HB_Remote_OK;
+EVC.EVL.HB_Auto_OK          := GVL_HeartBeat.HB_Auto_OK;
+EVC.EVL.HB_Remote_Mobile_OK := GVL_HeartBeat.HB_Remote_Mobile_OK;
+
+
 
 GVL_State.TimeStamp := GVL_State.TimeStamp + 1; 
 
@@ -2856,16 +2856,6 @@ CASE State OF
 		xPendingAutoLatch 	:= FALSE;
 		xPendingRemoteMobileLatch := FALSE; 
 		
-		
-		//IF Velocity &gt; MaxVelocity OR SteeringAngle &gt; MaxSteering THEN 
-			//not allowed
-		//ELSIF xReqManualPulse AND NOT xReqRemotePulse AND Active &lt;&gt; EControlMode.MANUAL AND HB_Manual_OK THEN 
-			//Pending := EPendingMode.PENDING_MANUAL; 
-			//State := ETransitionState.PENDING_ACK; 
-		//ELSIF xReqRemotePulse AND NOT xReqManualPulse AND Active &lt;&gt; EControlMode.REMOTE AND HB_Remote_OK THEN 
-			//Pending := EPendingMode.PENDING_REMOTE; 
-			//State := ETransitionState.PENDING_ACK; 
-		//END_IF
 	
 	//VALIDATE_TAKEOVER - handshake phase, waiting for release from active and ack from pending
 	//Transition completes when active station releases and pending station acknowledges
