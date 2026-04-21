@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-20T16:59:19.2426068" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-20T16:58:38.7761036" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-21T19:03:52.8425868" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-21T19:03:42.3445825" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2149,6 +2149,8 @@ GVL_IO.Releaserequest_Remote := fbControlUnit.ReleaseRequest_Remote;
 GVL_IO.Releaserequest_Auto := fbControlUnit.ReleaseRequest_Auto; 
 GVL_IO.ReleaseRequest_Remote_Mobile := fbControlUnit.ReleaseRequest_Remote_Mobile;
 
+GVL_State.TimeStamp := GVL_State.TimeStamp + 1; 
+
 IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
 
 //Behöver kolla mer här 
@@ -3815,7 +3817,6 @@ HB_Remote_Mobile_Out := HB_Remote_Mobile_Signal; </xhtml>
 		GVL_State.LastActiveBeforeTransition := LastActive;
 END_IF
 IF Active &lt;&gt; LastActive OR Pending &lt;&gt; LastPending OR State &lt;&gt; LastState THEN 
-	//SysTimeRtc.SysTimeRtcGet(GVL_State.TimeStamp);
 	GVL_State.Active := Active; 
 	GVL_State.Pending := Pending; 
 	GVL_State.State := State;
