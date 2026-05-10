@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-04-21T21:13:09.1938356" />
-  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-04-21T21:12:49.7547457" organization="ifm electronic">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP11 Patch 5" creationDateTime="2026-05-10T19:29:40.3172001" />
+  <contentHeader name="ifmCR711S_TemplateProject" version="2.4.10.0" modificationDateTime="2026-05-10T19:24:10.3108894" organization="ifm electronic">
     <Comment>Project template with CR711S configured 2.25MByte Standard 2.25MByte Safety</Comment>
     <coordinateInfo>
       <fbd>
@@ -2046,8 +2046,6 @@ fbHB_Remote(xSignal        := fbHBGen_Remote.xSignal);
 fbHB_Auto(xSignal          := fbHBGen_Auto.xSignal);
 fbHB_Remote_Mobile(xSignal := fbHBGen_Remote_Mobile.xSignal);
 
-
-//NEWWWW
 GVL_HeartBeat.HB_Manual_OK := fbHB_Manual.xOk;
 GVL_HeartBeat.HB_Remote_OK := fbHB_Remote.xOk;
 GVL_HeartBeat.HB_Auto_OK   := fbHB_Auto.xOk;
@@ -2080,18 +2078,18 @@ fbIntegrityCheck(
 );
 
 fbControlUnit(
-    ReqManual  		:= fbInputProcessing.ReqManual,
-	AckManual   	:= fbInputProcessing.AckManual,
-	RelManual   	:= fbInputProcessing.RelManual,
-    ReqRemote   	:= fbInputProcessing.ReqRemote,
-    AckRemote   	:= fbInputProcessing.AckRemote,
-    RelRemote   	:= fbInputProcessing.RelRemote,
-	ReqAuto			:= fbInputProcessing.ReqAuto,
-	AckAuto			:= fbInputProcessing.AckAuto,
-	RelAuto			:= fbInputProcessing.RelAuto,
-	ReqRemoteMobile := fbInputProcessing.ReqRemoteMobile, 
-	AckRemoteMobile := fbInputProcessing.AckRemoteMobile, 
-	RelRemoteMobile := fbInputProcessing.RelRemoteMobile,
+    ReqManual  		:= fbIntegrityCheck.ReqManual_Out,
+	AckManual   	:= fbIntegrityCheck.AckManual_Out,
+	RelManual   	:= fbIntegrityCheck.RelManual_Out,
+    ReqRemote   	:= fbIntegrityCheck.ReqRemote_Out,
+    AckRemote   	:= fbIntegrityCheck.AckRemote_Out,
+    RelRemote   	:= fbIntegrityCheck.RelRemote_Out,
+	ReqAuto			:= fbIntegrityCheck.ReqAuto_Out,
+	AckAuto			:= fbIntegrityCheck.AckAuto_Out,
+	RelAuto			:= fbIntegrityCheck.RelAuto_Out,
+	ReqRemoteMobile := fbIntegrityCheck.ReqRemoteMobile_Out, 
+	AckRemoteMobile := fbIntegrityCheck.AckRemoteMobile_Out, 
+	RelRemoteMobile := fbIntegrityCheck.RelRemoteMobile_Out,
 	HB_Manual_OK 	:= GVL_HeartBeat.HB_Manual_OK,
 	HB_Remote_OK 	:= GVL_HeartBeat.HB_Remote_OK,
 	HB_Auto_OK		:= GVL_HeartBeat.HB_Auto_OK, 
@@ -2152,8 +2150,7 @@ EVC.EVL.HB_Remote_Mobile_OK := GVL_HeartBeat.HB_Remote_Mobile_OK;
 GVL_State.TimeStamp := GVL_State.TimeStamp + 1; 
 
 IOWrapper.WRITE_OUTPUTS();	//Call IOWrapper Main Program and Write Data to Outputs 
-
-//Behöver kolla mer här 
+ 
 
 </xhtml>
                   </ST>
@@ -3667,34 +3664,7 @@ END_IF;
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF (ReqManual AND ReqRemote) OR //two stations want control
-   (ReqManual AND ReqAuto) 	 OR	 
-   (ReqManual AND ReqRemoteMobile) OR   
-   (ReqRemote AND ReqAuto)	 OR
-   (ReqRemote AND ReqRemoteMobile) OR 
-   (ReqAuto AND ReqRemoteMobile) THEN
-   
-   	Valid        := FALSE; 
-    ReqManual_Out := FALSE;
-    ReqRemote_Out := FALSE;
-	ReqAuto_Out	  := FALSE;
-	ReqRemoteMobile_Out := FALSE; 
-    AckManual_Out := AckManual;
-    AckRemote_Out := AckRemote;
-	AckAuto_Out	  := AckAuto;
-	AckRemoteMobile_Out := AckRemoteMobile; 
-    RelManual_Out := RelManual;
-    RelRemote_Out := RelRemote;
-	RelAuto_Out	  := RelAuto;
-	RelRemoteMobile_Out := RelRemoteMobile; 
-    HB_Manual_Out := HB_Manual_Signal;
-	HB_Remote_Out := HB_Remote_Signal;
-	HB_Auto_Out	  := HB_Auto_Signal;
-	HB_Remote_Mobile_Out := HB_Remote_Mobile_Signal; 
-    RETURN;
-END_IF
-   
-IF (ReqManual AND RelManual) OR //a station requesting and releasing at the same time
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF (ReqManual AND RelManual) OR //a station requesting and releasing at the same time
    (ReqRemote AND RelRemote) OR
    (ReqAuto AND RelAuto) OR
    (ReqRemoteMobile AND RelRemoteMobile) OR 
