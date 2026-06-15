@@ -29,7 +29,18 @@ Systemet är uppdelat enligt designmönstret monitor-actuator:
 - Timeout-mekanism avbryter en påbörjad övergång om den inte slutförs i tid
 - Safety PLC övervakar Standard PLC oberoende och kan utlösa nödlarm
 
+### Krav
+ 
+- CoDeSys V3.5 SP11 eller senare
+- IFM CR710S hårdvara (eller CoDeSys simulator)
+- IFM IOWrapper-bibliotek
+
+## Begränsningar
+ 
+- Systemet är implementerat och simulerat i CoDeSys — ej testat i full driftmiljö
+- Fokus på funktionell säkerhet, ej cybersäkerhet
+- Realtidsaspekter har ej beaktats
+- Arkitekturen beskriver MVP-implementationen med manuell och fjärrstyrning som primära styrstationer
+
 ## Utvecklat av
 Kandidatarbetesgrupp 20A, Chalmers tekniska högskola & Göteborgs Universitet. 
-
-Observera att detta projekt är pågående och detta repo uppdateras kontinuerligt. 
